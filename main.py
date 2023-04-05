@@ -1,6 +1,8 @@
 
 from dataclasses import dataclass, field
+import multiprocessing
 import random
+import time
 
 
 @dataclass
@@ -116,15 +118,25 @@ def park_or_send(parked_events, sequence_counter, outgoing_events, event):
     else:
         parked_events.append(ParkedEvent(event))
         
-def main():
-    events = get_events(5, 1000)
-    print(test_order(events))
+        
+def sort_and_validate(pvid_count, event_count):
+    events = get_events(pvid_count, event_count)
+    #print(test_order(events))
     random.shuffle(events)
-    print(test_order(events))
-
+    #print(test_order(events))
+    start = time.time()
     sorted_events = sort_events(events)
-    print(test_order(sorted_events))
-    return
+    end = time.time()
+    print(pvid_count, event_count, end - start)
+    #print(test_order(sorted_events))
+def main():
+    params = []
+    for pvid_count in range(2, 100, 10):
+        for event_count in range(10, 10000, 1000):
+            params.append((pvid_count, event_count))
+    
+    p = multiprocessing.Pool(16)
+    xs = p.starmap(sort_and_validate, params)
 
 
 if __name__ == "__main__":
