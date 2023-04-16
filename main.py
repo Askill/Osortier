@@ -8,23 +8,23 @@ import time
 @dataclass
 class Event:
     source_key: str
-    source_key_number: int
+    source_sequence_number: int
     destination_key: str
-    destination_key_number: int
+    destination_sequence_number: int
     
 @dataclass
 class ParkedEvent:
     source_key: str = field(init=False)
-    source_key_number: str = field(init=False)
+    source_sequence_number: str = field(init=False)
     destination_key: str = field(init=False)
-    destination_key_number: str = field(init=False)
+    destination_sequence_number: str = field(init=False)
     event: Event 
     
     def __post_init__(self):
         self.source_key = self.event.source_key
-        self.source_key_number = self.event.source_key_number - 1
+        self.source_sequence_number = self.event.source_sequence_number - 1
         self.destination_key = self.event.destination_key
-        self.destination_key_number= self.event.destination_key_number - 1
+        self.destination_sequence_number= self.event.destination_sequence_number - 1
 
 
 def get_events(key_count, num):
@@ -53,9 +53,9 @@ def test_order(l):
     partitions = dict(zip(keys, [[] for i in range(len(keys))]))
 
     for event in l:
-        partitions[event.source_key].append(event.source_key_number)
-        partitions[event.destination_key].append(event.destination_key_number)
-        #print(event.source_key, event.source_key_number, event.destination_key, event.destination_key_number)
+        partitions[event.source_key].append(event.source_sequence_number)
+        partitions[event.destination_key].append(event.destination_sequence_number)
+        #print(event.source_key, event.source_sequence_number, event.destination_key, event.destination_sequence_number)
 
     ordered = True
     for key, value in partitions.items():
@@ -103,18 +103,18 @@ def pull_processable_events(parked_events):
     return ret
 
 def park_or_send(parked_events, sequence_counter, outgoing_events, event):
-    if event.source_key in sequence_counter.keys() and event.destination_key in sequence_counter.keys() and event.source_key_number == sequence_counter[event.source_key] + 1 and event.destination_key_number == sequence_counter[event.destination_key] + 1:
+    if event.source_key in sequence_counter.keys() and event.destination_key in sequence_counter.keys() and event.source_sequence_number == sequence_counter[event.source_key] + 1 and event.destination_sequence_number == sequence_counter[event.destination_key] + 1:
         outgoing_events.append(event)
         sequence_counter[event.source_key] += 1
         sequence_counter[event.destination_key] += 1
-    elif event.source_key in sequence_counter and  event.source_key_number == sequence_counter[event.source_key] + 1 :
+    elif event.source_key in sequence_counter and  event.source_sequence_number == sequence_counter[event.source_key] + 1 :
         pe = ParkedEvent(event)
-        pe.source_key_number = None
+        pe.source_sequence_number = None
         pe.source_key = None
         parked_events.append(pe)
-    elif event.destination_key in sequence_counter and event.destination_key_number == sequence_counter[event.destination_key] + 1:
+    elif event.destination_key in sequence_counter and event.destination_sequence_number == sequence_counter[event.destination_key] + 1:
         pe = ParkedEvent(event)
-        pe.destination_key_number = None
+        pe.destination_sequence_number = None
         pe.destination_key = None
         parked_events.append(pe)
     else:
@@ -134,11 +134,12 @@ def sort_and_validate(pvid_count, event_count):
     end = time.time()
     print(pvid_count, event_count, end - start)
     print(test_order(sorted_events))
+    [print(e) for e in sorted_events]
     
 def benchmark():
     params = []
-    for pvid_count in range(2, 100, 10):
-        for event_count in range(10, 10000, 1000):
+    for event_count in range(10, 10000, 1000):
+        for pvid_count in range(2, 100, 10):
             params.append((pvid_count, event_count))
     
     p = multiprocessing.Pool(8)
@@ -150,4 +151,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    benchmark()
+    #benchmark()
