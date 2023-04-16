@@ -73,19 +73,19 @@ def sort_events(events):
     sequence_counter = {}
     outgoing_events = []
     for event in events:
-        if event.source_key_number == 0 and event.destination_key_number == 0:
-            sequence_counter[event.source_key] = 0
-            sequence_counter[event.destination_key] = 0
-        elif event.source_key_number == 0:
-            sequence_counter[event.source_key] = 0
-        elif event.destination_key_number == 0:
-            sequence_counter[event.destination_key] = 0
+        if event.source_key not in sequence_counter:
+            sequence_counter[event.source_key] = -1
+        if event.destination_key not in sequence_counter:
+            sequence_counter[event.destination_key] = -1
         
         park_or_send(parked_events, sequence_counter, outgoing_events, event)
             
         for ev in pull_processable_events(parked_events):
             park_or_send(parked_events, sequence_counter, outgoing_events, ev)
-            
+
+    for ev in parked_events:
+        park_or_send(parked_events, sequence_counter, outgoing_events, ev.event)            
+
     return outgoing_events
 
 def pull_processable_events(parked_events):
@@ -103,8 +103,10 @@ def pull_processable_events(parked_events):
     return ret
 
 def park_or_send(parked_events, sequence_counter, outgoing_events, event):
-    if event.source_key in sequence_counter and event.destination_key in sequence_counter and event.source_key_number == sequence_counter[event.source_key] + 1 and event.destination_key_number == sequence_counter[event.destination_key] + 1:
+    if event.source_key in sequence_counter.keys() and event.destination_key in sequence_counter.keys() and event.source_key_number == sequence_counter[event.source_key] + 1 and event.destination_key_number == sequence_counter[event.destination_key] + 1:
         outgoing_events.append(event)
+        sequence_counter[event.source_key] += 1
+        sequence_counter[event.destination_key] += 1
     elif event.source_key in sequence_counter and  event.source_key_number == sequence_counter[event.source_key] + 1 :
         pe = ParkedEvent(event)
         pe.source_key_number = None
@@ -122,22 +124,30 @@ def park_or_send(parked_events, sequence_counter, outgoing_events, event):
 def sort_and_validate(pvid_count, event_count):
     events = get_events(pvid_count, event_count)
     #print(test_order(events))
+    #print(events)
     random.shuffle(events)
+    #print(events)
     #print(test_order(events))
     start = time.time()
     sorted_events = sort_events(events)
+    #print(sorted_events)
     end = time.time()
     print(pvid_count, event_count, end - start)
-    #print(test_order(sorted_events))
-def main():
+    print(test_order(sorted_events))
+    
+def benchmark():
     params = []
     for pvid_count in range(2, 100, 10):
         for event_count in range(10, 10000, 1000):
             params.append((pvid_count, event_count))
     
-    p = multiprocessing.Pool(16)
+    p = multiprocessing.Pool(8)
     xs = p.starmap(sort_and_validate, params)
+
+def main():
+    sort_and_validate(4, 5)
 
 
 if __name__ == "__main__":
     main()
+    benchmark()
