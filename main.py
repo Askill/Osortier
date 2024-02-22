@@ -4,6 +4,39 @@ import multiprocessing
 import random
 import time
 
+import psycopg2
+
+DB_USER = "user"
+DB_PASSWD = "passwd"
+DB_ADRESS = "192.168.178.33"
+DB_NAME = "db"
+
+conn = psycopg2.connect(
+    host=DB_ADRESS,
+    database=DB_NAME,
+    user=DB_USER,
+    password=DB_PASSWD
+)
+conn.autocommit = True
+cursor = conn.cursor()
+
+def setup_parked_event_table(cursor):
+    cursor.execute("""
+        CREATE TABLE ParkedEvents (    
+        source_key varchar(255),
+        source_sequence_number int,
+        destination_key varchar(255),
+        destination_sequence_number int,
+        
+        PRIMARY KEY (source_key, source_sequence_number, destination_key, destination_sequence_number)
+        )
+        """)
+    
+def delete_parked_events_table(cursor):
+    cursor.execute("""
+        DROP TABLE ParkedEvents""")
+    
+setup_parked_event_table(cursor)
 
 @dataclass
 class Event:
@@ -132,9 +165,9 @@ def sort_and_validate(pvid_count, event_count):
     sorted_events = sort_events(events)
     #print(sorted_events)
     end = time.time()
-    print(pvid_count, event_count, end - start)
-    print(test_order(sorted_events))
-    [print(e) for e in sorted_events]
+    #print(pvid_count, event_count, end - start)
+    #print(test_order(sorted_events))
+    #[print(e) for e in sorted_events]
     
 def benchmark():
     params = []
