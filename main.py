@@ -1,10 +1,9 @@
 
 import multiprocessing
-import random
 import time
 
 import db
-from generate_events import get_events, shuffle
+from generate_events import get_events
 from test import test_order
 
 
@@ -33,7 +32,6 @@ def sort_events(events):
             db.create_sequence_counter(event.destination_key)
         
         park_or_send(event) 
-        db.update_precondition_status()
         # make this parrallel
         while True:
             ev = db.pull_processable_events()
@@ -54,12 +52,12 @@ def sort_events(events):
 def sort_and_validate(events):
     #print(test_order(events))
     #print(events)
-    shuffeled = shuffle(events)
+    #shuffle(events)
 
     #print(events)
     #print(test_order(events))
     start = time.time()
-    sorted_events = sort_events(shuffeled)
+    sorted_events = sort_events(events)
     #print(sorted_events)
     end = time.time()
     print(end - start, "s")
@@ -69,7 +67,7 @@ def sort_and_validate(events):
 
 
 def main():
-    events = get_events(10, 20)
+    events = get_events(100, 100)
     sort_and_validate(events)
 
 

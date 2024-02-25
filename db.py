@@ -127,17 +127,20 @@ def park_event(
     # print("parked", f"({pe.source_key}, {pe.source_sequence_number}, {pe.destination_key}, {pe.destination_sequence_number}, {source_precondition_fullfilled}, {destination_precondition_fullfilled})" )
     cursor.execute(query_string)
 
-
+sequence_counter = set()
 def create_sequence_counter(key):
     cursor = conn.cursor()
     query_string = f"""
     INSERT INTO SequenceCounter 
     VALUES( '{key}', 0)
     """
+    sequence_counter.add(key)
     cursor.execute(query_string)
 
 
 def get_sequence_counter(key):
+    if key in sequence_counter:
+        return True
     cursor = conn.cursor()
     query_string = f"""
     SELECT COUNT(key) 
@@ -194,25 +197,6 @@ def event_has_dest_precondition(event):
     cursor.execute(query_string)
     ret = cursor.fetchall()[0][0]
     return bool(ret)
-
-def update_precondition_status():
-    cursor = conn.cursor()
-    query_string = f"""
-    UPDATE ParkedEvents
-    SET source_precondition_fullfilled = true 
-    FROM SequenceCounter
-    WHERE ParkedEvents.source_key = SequenceCounter.key 
-    AND ParkedEvents.source_sequence_number <= SequenceCounter.sequence_number ;
-    """
-    cursor.execute(query_string)
-    query_string = f"""
-    UPDATE ParkedEvents
-    SET destination_precondition_fullfilled = true 
-    FROM SequenceCounter
-    WHERE ParkedEvents.destination_key = SequenceCounter.key 
-    AND ParkedEvents.destination_sequence_number <= SequenceCounter.sequence_number ;
-    """
-    cursor.execute(query_string)
 
 def send_event(event):
     cursor = conn.cursor()
