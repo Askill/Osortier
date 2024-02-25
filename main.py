@@ -41,12 +41,7 @@ def sort_events(events):
                 break
             for x in ev:
                 park_or_send(db.Event(*x[:4]))
-                db.update_precondition_status()
-
-    db.update_precondition_status()
-    x = db.pull_processable_events()
-    for ev in x:
-        park_or_send(db.Event(*ev[:4]))            
+    
 
     cursor = db.conn.cursor()
     query_string = """
@@ -59,7 +54,7 @@ def sort_events(events):
 def sort_and_validate(events):
     #print(test_order(events))
     #print(events)
-    shuffeled = shuffle(events, 0.2)
+    shuffeled = shuffle(events)
 
     #print(events)
     #print(test_order(events))
@@ -67,14 +62,14 @@ def sort_and_validate(events):
     sorted_events = sort_events(shuffeled)
     #print(sorted_events)
     end = time.time()
-    print(end - start, " s")
-    print("ordered: ", test_order(sorted_events))
+    print(end - start, "s")
+    print("ordered: ", test_order(sorted_events), "length ", len(sorted_events) )
     #print("events: ")
     #[print(e) for e in sorted_events]
 
 
 def main():
-    events = get_events(26, 1000)
+    events = get_events(10, 20)
     sort_and_validate(events)
 
 

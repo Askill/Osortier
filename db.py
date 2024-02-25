@@ -229,22 +229,32 @@ def send_event(event):
     AND destination_sequence_number = {event.destination_sequence_number};
     """
     cursor.execute(query_string)
+    increase_sequence_counter(event.source_key, event.source_sequence_number)
+    increase_sequence_counter(event.destination_key, event.destination_sequence_number)
     query_string = f"""
     UPDATE ParkedEvents 
     SET source_precondition_fullfilled = true 
-    WHERE source_key = '{event.source_key}' 
-    AND source_sequence_number = {event.source_sequence_number+1} ;
+    WHERE 
+    (source_key = '{event.source_key}' 
+    AND source_sequence_number = {event.source_sequence_number+1} )
+    OR
+    (source_key = '{event.destination_key}' 
+    AND source_sequence_number = {event.destination_sequence_number+1})
+    ;
     """
     cursor.execute(query_string)
     query_string = f"""
     UPDATE ParkedEvents 
     SET destination_precondition_fullfilled = true 
-    WHERE destination_key = '{event.destination_key}' 
-    AND destination_sequence_number = {event.destination_sequence_number+1} ;
+    WHERE 
+    (destination_key = '{event.destination_key}' 
+    AND destination_sequence_number = {event.destination_sequence_number+1} )
+    OR
+    (destination_key = '{event.source_key}' 
+    AND destination_sequence_number = {event.source_sequence_number+1});
     """
     cursor.execute(query_string)
-    increase_sequence_counter(event.source_key, event.source_sequence_number)
-    increase_sequence_counter(event.destination_key, event.destination_sequence_number)
+
 
 
 
