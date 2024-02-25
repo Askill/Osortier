@@ -1,52 +1,86 @@
 
-from dataclasses import dataclass, field
 import multiprocessing
 import random
 import time
 
 import db
-from generate_events import get_events
+from generate_events import get_events, shuffle
 from test import test_order
 
-@dataclass
-class Event:
-    source_key: str
-    source_sequence_number: int
-    destination_key: str
-    destination_sequence_number: int
-    
-@dataclass
-class ParkedEvent:
-    source_key: str = field(init=False)
-    source_sequence_number: str = field(init=False)
-    destination_key: str = field(init=False)
-    destination_sequence_number: str = field(init=False)
-    event: Event 
-    
-    def __post_init__(self):
-        self.source_key = self.event.source_key
-        self.source_sequence_number = self.event.source_sequence_number - 1
-        self.destination_key = self.event.destination_key
-        self.destination_sequence_number= self.event.destination_sequence_number - 1
 
+def park_or_send(event):
+    source_fullfilled = db.event_has_source_precondition(event)
+    dest_fullfilled = db.event_has_dest_precondition(event)
+
+    if source_fullfilled and dest_fullfilled:
+        db.send_event(event)
+    elif source_fullfilled:
+        db.park_event(event, True, False)
+    elif dest_fullfilled:
+        db.park_event(event, False, True)
+    else:
+        db.park_event(event, False, False)
+
+def sort_events(events):
     
+    for event in events:
+        source_count = db.get_sequence_counter(event.source_key)
+        dest_count = db.get_sequence_counter(event.destination_key)
+        
+        if not source_count:
+            db.create_sequence_counter(event.source_key)
+        if not dest_count:
+            db.create_sequence_counter(event.destination_key)
+        
+        park_or_send(event) 
+        db.update_precondition_status()
+        # make this parrallel
+        while True:
+            ev = db.pull_processable_events()
+            if not ev:
+                break
+            for x in ev:
+                park_or_send(db.Event(*x[:4]))
+                db.update_precondition_status()
 
+    db.update_precondition_status()
+    x = db.pull_processable_events()
+    for ev in x:
+        park_or_send(db.Event(*ev[:4]))            
 
-def sort_and_validate(pvid_count, event_count):
-    events = get_events(pvid_count, event_count)
+    cursor = db.conn.cursor()
+    query_string = """
+    SELECT * FROM OutgoingEvents ORDER BY created_at ASC
+    """
+    cursor.execute(query_string)
+    values = cursor.fetchall()
+    return [db.Event(a,b,c,d) for a,b,c,d,_ in values] 
+
+def sort_and_validate(events):
     #print(test_order(events))
     #print(events)
-    random.shuffle(events)
+    shuffeled = shuffle(events, 0.2)
+
     #print(events)
     #print(test_order(events))
     start = time.time()
-    sorted_events = db.sort_events(events)
+    sorted_events = sort_events(shuffeled)
     #print(sorted_events)
     end = time.time()
-    print(pvid_count, event_count, end - start)
-    print(test_order(sorted_events))
+    print(end - start, " s")
+    print("ordered: ", test_order(sorted_events))
+    #print("events: ")
     #[print(e) for e in sorted_events]
-    
+
+
+def main():
+    events = get_events(26, 1000)
+    sort_and_validate(events)
+
+
+
+
+
 def benchmark():
     params = []
     for event_count in range(10, 10000, 1000):
@@ -55,10 +89,6 @@ def benchmark():
     
     p = multiprocessing.Pool(8)
     xs = p.starmap(sort_and_validate, params)
-
-def main():
-    sort_and_validate(4, 5)
-
 
 if __name__ == "__main__":
     main()

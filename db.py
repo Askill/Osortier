@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass, field
 import psycopg2
 
@@ -8,12 +7,10 @@ DB_ADRESS = "192.168.178.33"
 DB_NAME = "db"
 
 conn = psycopg2.connect(
-    host=DB_ADRESS,
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWD
+    host=DB_ADRESS, database=DB_NAME, user=DB_USER, password=DB_PASSWD
 )
 conn.autocommit = True
+
 
 @dataclass
 class Event:
@@ -21,20 +18,7 @@ class Event:
     source_sequence_number: int
     destination_key: str
     destination_sequence_number: int
-    
-@dataclass
-class ParkedEvent:
-    source_key: str = field(init=False)
-    source_sequence_number: str = field(init=False)
-    destination_key: str = field(init=False)
-    destination_sequence_number: str = field(init=False)
-    event: Event 
-    
-    def __post_init__(self):
-        self.source_key = self.event.source_key
-        self.source_sequence_number = self.event.source_sequence_number - 1
-        self.destination_key = self.event.destination_key
-        self.destination_sequence_number= self.event.destination_sequence_number - 1
+
 
 def clean_tables():
     cursor = conn.cursor()
@@ -43,7 +27,9 @@ def clean_tables():
         DELETE FROM OutgoingEvents WHERE 1=1;
         DELETE FROM ParkedEvents WHERE 1=1;
         DELETE FROM SequenceCounter WHERE 1=1;
-        """)
+        """
+    )
+
 
 def setup_parked_event_table():
     cursor = conn.cursor()
@@ -59,8 +45,10 @@ def setup_parked_event_table():
 
         PRIMARY KEY (source_key, source_sequence_number, destination_key, destination_sequence_number)
         )
-        """)
-    
+        """
+    )
+
+
 def setup_outgoing_event_table():
     cursor = conn.cursor()
     cursor.execute(
@@ -74,7 +62,10 @@ def setup_outgoing_event_table():
 
         PRIMARY KEY (source_key, source_sequence_number, destination_key, destination_sequence_number)
         )
-        """)
+        """
+    )
+
+
 def setup_sequence_counter_table():
     cursor = conn.cursor()
     cursor.execute(
@@ -84,126 +75,177 @@ def setup_sequence_counter_table():
         sequence_number int,
         PRIMARY KEY (key)
         )
-        """)
+        """
+    )
+
+
 def delete_parked_events_table():
     cursor = conn.cursor()
     cursor.execute(
         """
         DROP TABLE ParkedEvents
-        """)
-    
+        """
+    )
+
 
 def pull_processable_events():
     cursor = conn.cursor()
     query_string = """
-    SELECT * FROM ParkedEvents WHERE source_key = 'Null' AND destination_key = 'Null' 
+    SELECT * FROM ParkedEvents WHERE source_precondition_fullfilled = true AND destination_precondition_fullfilled = true
     """
     cursor.execute(query_string)
-    return cursor.fetchall()
+    ret = cursor.fetchall()
+    delete_pulled_processable_events()
+    return ret
 
-def park_event(event, source_precondition_fullfilled, destination_precondition_fullfilled):
-    pe = ParkedEvent(event)
-    if source_precondition_fullfilled:
-        pe.source_sequence_number = None
-        pe.source_key = None
-    elif destination_precondition_fullfilled:
-        pe.destination_sequence_number = None
-        pe.destination_key = None
+
+def delete_pulled_processable_events():
+    cursor = conn.cursor()
+    query_string = """
+    DELETE FROM ParkedEvents WHERE source_precondition_fullfilled = true AND destination_precondition_fullfilled = true
+    """
+    cursor.execute(query_string)
+
+
+def pull_processable_events_end():
+    cursor = conn.cursor()
+    query_string = """
+    SELECT * FROM ParkedEvents
+    """
+    cursor.execute(query_string)
+    ret = cursor.fetchall()
+    return ret
+
+
+def park_event(
+    event, source_precondition_fullfilled, destination_precondition_fullfilled
+):
     cursor = conn.cursor()
     query_string = f"""
-    INSERT INTO ParkedEvents VALUES ({pe.source_key}, {pe.source_sequence_number}, {pe.destination_key}, {pe.destination_sequence_number}, {source_precondition_fullfilled}, {destination_precondition_fullfilled}) 
+    INSERT INTO ParkedEvents VALUES ('{event.source_key}', {event.source_sequence_number}, '{event.destination_key}', {event.destination_sequence_number}, {source_precondition_fullfilled}, {destination_precondition_fullfilled}) 
     """
+    # print("parked", f"({pe.source_key}, {pe.source_sequence_number}, {pe.destination_key}, {pe.destination_sequence_number}, {source_precondition_fullfilled}, {destination_precondition_fullfilled})" )
     cursor.execute(query_string)
+
 
 def create_sequence_counter(key):
     cursor = conn.cursor()
     query_string = f"""
-    INSERT INTO SequenceCounter VALUES( '{key}', 0)
+    INSERT INTO SequenceCounter 
+    VALUES( '{key}', 0)
     """
     cursor.execute(query_string)
+
 
 def get_sequence_counter(key):
     cursor = conn.cursor()
     query_string = f"""
-    SELECT * FROM SequenceCounter WHERE SequenceCounter.key = '{key}'
+    SELECT COUNT(key) 
+    FROM SequenceCounter 
+    WHERE key = '{key}'
     """
     cursor.execute(query_string)
-    return cursor.fetchall()
+    value = cursor.fetchall()
 
-def increase_sequence_counter(key):
+    ret = value[0][0]
+
+    return bool(ret)
+
+
+def increase_sequence_counter(key, number):
     cursor = conn.cursor()
     query_string = f"""
-    UPDATE SequenceCounter SET sequence_number = sequence_number + 1 WHERE key = '{key}'
+    UPDATE SequenceCounter 
+    SET sequence_number = sequence_number + 1 
+    WHERE key = '{key}'
     """
     cursor.execute(query_string)
+
 
 def event_has_source_precondition(event):
+
+    if event.source_sequence_number == 0:
+        return True
+
     cursor = conn.cursor()
     query_string = f"""
-    SELECT COUNT(key) FROM SequenceCounter WHERE key = '{event.source_key}' AND sequence_number = {event.source_sequence_number - 1}
+    SELECT COUNT(key) 
+    FROM SequenceCounter 
+    WHERE key = '{event.source_key}' 
+    AND sequence_number = {event.source_sequence_number}
     """
     cursor.execute(query_string)
-    return bool(cursor.fetchall())
+    ret = cursor.fetchall()[0][0]
+    return bool(ret)
+
 
 def event_has_dest_precondition(event):
+
+    if event.destination_sequence_number == 0:
+        return True
+
     cursor = conn.cursor()
     query_string = f"""
-    SELECT COUNT(key) FROM SequenceCounter WHERE key = '{event.destination_key}' AND sequence_number = {event.destination_sequence_number - 1}
+    SELECT COUNT(key) 
+    FROM SequenceCounter 
+    WHERE key = '{event.destination_key}' 
+    AND sequence_number = {event.destination_sequence_number}
     """
     cursor.execute(query_string)
-    return bool(cursor.fetchall())
+    ret = cursor.fetchall()[0][0]
+    return bool(ret)
+
+def update_precondition_status():
+    cursor = conn.cursor()
+    query_string = f"""
+    UPDATE ParkedEvents
+    SET source_precondition_fullfilled = true 
+    FROM SequenceCounter
+    WHERE ParkedEvents.source_key = SequenceCounter.key 
+    AND ParkedEvents.source_sequence_number <= SequenceCounter.sequence_number ;
+    """
+    cursor.execute(query_string)
+    query_string = f"""
+    UPDATE ParkedEvents
+    SET destination_precondition_fullfilled = true 
+    FROM SequenceCounter
+    WHERE ParkedEvents.destination_key = SequenceCounter.key 
+    AND ParkedEvents.destination_sequence_number <= SequenceCounter.sequence_number ;
+    """
+    cursor.execute(query_string)
 
 def send_event(event):
     cursor = conn.cursor()
     query_string = f"""
-    INSERT INTO OutgoingEvents VALUES('{event.source_key}', {event.source_sequence_number}, '{event.destination_key}', {event.destination_sequence_number}) 
+    INSERT INTO OutgoingEvents 
+    VALUES('{event.source_key}', {event.source_sequence_number}, '{event.destination_key}', {event.destination_sequence_number}); 
+  """
+    cursor.execute(query_string)
+    query_string = f"""
+    DELETE FROM ParkedEvents 
+    WHERE source_key = '{event.source_key}' 
+    AND source_sequence_number = {event.source_sequence_number} 
+    AND destination_key = '{event.destination_key}' 
+    AND destination_sequence_number = {event.destination_sequence_number};
     """
     cursor.execute(query_string)
-    increase_sequence_counter(event.source_key)
-    increase_sequence_counter(event.destination_key)
-
-def park_or_send(event):
-    source_fullfilled = event_has_source_precondition(event)
-    dest_fullfilled = event_has_dest_precondition(event)
-
-    if source_fullfilled and dest_fullfilled:
-        send_event(event)
-    elif source_fullfilled:
-        park_event(event, True, False)
-    elif dest_fullfilled:
-        park_event(event, False, True)
-    else:
-        park_event(event, False, False)
-
-def sort_events(events):
-    for event in events:
-        source_count = get_sequence_counter(event.source_key)
-        dest_count = get_sequence_counter(event.destination_key)
-        
-        if not source_count:
-            create_sequence_counter(event.source_key)
-        if not dest_count:
-            create_sequence_counter(event.destination_key)
-        
-        park_or_send(event) 
-
-        # make this parrallel
-        for ev in pull_processable_events():
-            park_or_send(ev)
-
-    for ev in pull_processable_events():
-        park_or_send(ev.event)            
-
-    cursor = conn.cursor()
-    query_string = """
-    SELECT * FROM OutgoingEvents ORDER BY created_at ASC
+    query_string = f"""
+    UPDATE ParkedEvents 
+    SET source_precondition_fullfilled = true 
+    WHERE source_key = '{event.source_key}' 
+    AND source_sequence_number = {event.source_sequence_number+1} ;
     """
     cursor.execute(query_string)
-    values = cursor.fetchall()
-    return [Event(a,b,c,d) for a,b,c,d,_ in values] 
+    query_string = f"""
+    UPDATE ParkedEvents 
+    SET destination_precondition_fullfilled = true 
+    WHERE destination_key = '{event.destination_key}' 
+    AND destination_sequence_number = {event.destination_sequence_number+1} ;
+    """
+    cursor.execute(query_string)
+    increase_sequence_counter(event.source_key, event.source_sequence_number)
+    increase_sequence_counter(event.destination_key, event.destination_sequence_number)
 
 
-#setup_outgoing_event_table()
-#setup_sequence_counter_table()
-#setup_parked_event_table()
+
 clean_tables()
