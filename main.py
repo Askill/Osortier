@@ -2,8 +2,10 @@
 import multiprocessing
 import time
 
+import psycopg2
+
 import db
-from generate_events import get_events
+from generate_events import get_events, shuffle
 from test import test_order
 
 
@@ -40,8 +42,12 @@ def sort_events(events):
             for x in ev:
                 park_or_send(db.Event(*x[:4]))
     
+    conn = psycopg2.connect(
+    host=db.DB_ADRESS, database=db.DB_NAME, user=db.DB_USER, password=db.DB_PASSWD
+    )
+    conn.autocommit = True
 
-    cursor = db.conn.cursor()
+    cursor = conn.cursor()
     query_string = """
     SELECT * FROM OutgoingEvents ORDER BY created_at ASC
     """
@@ -52,7 +58,7 @@ def sort_events(events):
 def sort_and_validate(events):
     #print(test_order(events))
     #print(events)
-    #shuffle(events)
+    shuffle(events)
 
     #print(events)
     #print(test_order(events))

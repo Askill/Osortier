@@ -6,10 +6,6 @@ DB_PASSWD = "passwd"
 DB_ADRESS = "192.168.178.33"
 DB_NAME = "db"
 
-conn = psycopg2.connect(
-    host=DB_ADRESS, database=DB_NAME, user=DB_USER, password=DB_PASSWD
-)
-conn.autocommit = True
 
 
 @dataclass
@@ -19,8 +15,14 @@ class Event:
     destination_key: str
     destination_sequence_number: int
 
+conn = psycopg2.connect(
+host=DB_ADRESS, database=DB_NAME, user=DB_USER, password=DB_PASSWD
+)
+conn.autocommit = True
+
 
 def clean_tables():
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -32,6 +34,7 @@ def clean_tables():
 
 
 def setup_parked_event_table():
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -50,6 +53,7 @@ def setup_parked_event_table():
 
 
 def setup_outgoing_event_table():
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -67,6 +71,7 @@ def setup_outgoing_event_table():
 
 
 def setup_sequence_counter_table():
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -80,6 +85,7 @@ def setup_sequence_counter_table():
 
 
 def delete_parked_events_table():
+
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -89,6 +95,7 @@ def delete_parked_events_table():
 
 
 def pull_processable_events():
+
     cursor = conn.cursor()
     query_string = """
     SELECT * FROM ParkedEvents WHERE source_precondition_fullfilled = true AND destination_precondition_fullfilled = true
@@ -100,6 +107,7 @@ def pull_processable_events():
 
 
 def delete_pulled_processable_events():
+
     cursor = conn.cursor()
     query_string = """
     DELETE FROM ParkedEvents WHERE source_precondition_fullfilled = true AND destination_precondition_fullfilled = true
@@ -108,6 +116,7 @@ def delete_pulled_processable_events():
 
 
 def pull_processable_events_end():
+
     cursor = conn.cursor()
     query_string = """
     SELECT * FROM ParkedEvents
@@ -120,6 +129,7 @@ def pull_processable_events_end():
 def park_event(
     event, source_precondition_fullfilled, destination_precondition_fullfilled
 ):
+
     cursor = conn.cursor()
     query_string = f"""
     INSERT INTO ParkedEvents VALUES ('{event.source_key}', {event.source_sequence_number}, '{event.destination_key}', {event.destination_sequence_number}, {source_precondition_fullfilled}, {destination_precondition_fullfilled}) 
@@ -129,6 +139,7 @@ def park_event(
 
 sequence_counter = set()
 def create_sequence_counter(key):
+
     cursor = conn.cursor()
     query_string = f"""
     INSERT INTO SequenceCounter 
@@ -141,6 +152,7 @@ def create_sequence_counter(key):
 def get_sequence_counter(key):
     if key in sequence_counter:
         return True
+
     cursor = conn.cursor()
     query_string = f"""
     SELECT COUNT(key) 
@@ -156,6 +168,7 @@ def get_sequence_counter(key):
 
 
 def increase_sequence_counter(key, number):
+
     cursor = conn.cursor()
     query_string = f"""
     UPDATE SequenceCounter 
@@ -199,6 +212,7 @@ def event_has_dest_precondition(event):
     return bool(ret)
 
 def send_event(event):
+
     cursor = conn.cursor()
     query_string = f"""
     INSERT INTO OutgoingEvents 

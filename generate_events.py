@@ -46,11 +46,11 @@ def save_json(data, path):
         json.dump(data, f, default=lambda x: x.__dict__)
 
 def main():
-    account_count= 10
-    event_count= 100
+    account_count= 5
+    event_count= 10
 
     events = get_events(account_count, event_count)
-    shuffeled = shuffle(get_events(account_count, event_count), 0.2)
+    shuffeled = shuffle(get_events(account_count, event_count), 1)
 
     save_json(events, "./data/events.json")
     save_json(shuffeled, "./data/shuffeled_events.json")
