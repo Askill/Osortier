@@ -32,12 +32,6 @@ def get_events(key_count, num):
 def shuffle(events, shuffle_score=1):
     if shuffle_score == 1:
         random.shuffle(events)
-    else:
-        step_size = shuffle_score * len(events)
-        for i in range(0, len(events)-5, int(step_size)):
-            y = events[i:i+2]
-            random.shuffle(y)
-            events[i:i+5] = y
 
     return events
 
@@ -46,8 +40,8 @@ def save_json(data, path):
         json.dump(data, f, default=lambda x: x.__dict__)
 
 def main():
-    account_count= 5
-    event_count= 10
+    account_count= 20
+    event_count= 100000
 
     events = get_events(account_count, event_count)
     shuffeled = shuffle(get_events(account_count, event_count), 1)

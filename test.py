@@ -1,3 +1,13 @@
+from dataclasses import dataclass
+import json
+
+@dataclass
+class Event:
+    source_key: str
+    source_sequence_number: int
+    destination_key: str
+    destination_sequence_number: int
+
 def test_order(l):
     keys = []
     for event in l:
@@ -19,3 +29,10 @@ def test_order(l):
             ordered = False
         #print(key, sorted_check, value)
     return ordered
+
+if __name__ == "__main__":
+    with open("./go/sorted.json", 'r') as f:
+        l = json.load(f)
+    l = [Event(**x) for x in l]
+    print(len(l))
+    print("ordered: ", test_order(l))

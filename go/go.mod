@@ -1,3 +1,3 @@
 module jphm.de/event_sorter
 
-go 1.20
+go 1.22

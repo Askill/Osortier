@@ -12,6 +12,10 @@ type backlog struct {
 }
 
 func (bl *backlog) store(event Event) {
+	exists := bl.findEvent(event)
+	if exists != -1 {
+		return
+	}
 	bl.counter = bl.counter + 1
 	bl.Stored[bl.counter] = event
 	bl.sources[event.Source_key+strconv.Itoa(event.Source_sequence_number)] = bl.counter
@@ -34,24 +38,29 @@ func (bl *backlog) findEvent(event Event) int {
 	return -1
 }
 
-func (bl *backlog) get(name1 string, count1 int, name2 string, count2 int) (Event, int) {
-	source1 := bl.sources[name1+strconv.Itoa(count1)]
-	dest1 := bl.dests[name1+strconv.Itoa(count1)]
+func keysFromMap(mymap map[string]int) []string {
+	keys := make([]string, 0, len(mymap))
+	for k := range mymap {
+		keys = append(keys, k)
+	}
+	return keys
+}
 
-	source2 := bl.sources[name2+strconv.Itoa(count2)]
-	dest2 := bl.dests[name2+strconv.Itoa(count2)]
+func (bl *backlog) get(name1 string, count1 int) (Event, int) {
+	source1, exists1 := bl.sources[name1+strconv.Itoa(count1)]
+	dest1, exists2 := bl.dests[name1+strconv.Itoa(count1)]
 
-	if source1 == dest2 && source1 != 0 {
+	if exists1 {
 		//fmt.Println("event ret 1")
 		//fmt.Println(bl.Stored[source1])
 		return bl.Stored[source1], 0
+	} else if exists2 {
+		return bl.Stored[dest1], 0
+	} else {
+		//fmt.Println(keysFromMap(bl.sources))
+		//fmt.Println(name1, count1, source1, dest1, exists1, exists2)
+		return Event{}, -1
 	}
-	if source2 == dest1 && source2 != 0 {
-		//fmt.Println("event ret 2")
-		//fmt.Println(bl.Stored[source2])
-		return bl.Stored[source2], 0
-	}
-	return Event{}, -1
 }
 
 func (bl *backlog) remove(event Event) {
