@@ -97,14 +97,7 @@ func parkOrSend(event Event, sequenceCounter *sequenceCounter, backlog *backlog,
 
 func sortEvents(Events *[]Event, sequenceCounter *sequenceCounter, backlog *backlog, output *[]Event) {
 	for i, event := range *Events {
-		if i%1000 == 0 {
-			fmt.Println(i)
-		}
-		parkOrSend(event, sequenceCounter, backlog, 2000000, output)
-	}
-	fmt.Println("working on backlog")
-	for i, event := range backlog.Stored {
-		if i%1000 == 0 {
+		if i%10000 == 0 {
 			fmt.Println(i)
 		}
 		parkOrSend(event, sequenceCounter, backlog, 2000000, output)
