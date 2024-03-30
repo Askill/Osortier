@@ -105,9 +105,11 @@ func sortEvents(Events *[]Event, sequenceCounter *sequenceCounter, backlog *back
 }
 
 func main() {
-
+	fmt.Println("Generating events")
+	gen()
+	fmt.Println("Sorting Events")
 	eventList := make([]Event, 0, 3000000)
-	loadEvents(&eventList, "../data/shuffeled_events.json")
+	loadEvents(&eventList, "../data/shuffeled_events_go.json")
 	fmt.Println("Loaded Events")
 	sequenceCounter := &sequenceCounter{counter: make(map[string]int)}
 	backlog := &backlog{counter: 1, Stored: make(map[int]Event), sources: make(map[string]int), dests: make(map[string]int)}
