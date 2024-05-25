@@ -1,19 +1,105 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { Construct } from 'constructs';
+import { IResource, LambdaIntegration, MockIntegration, PassthroughBehavior, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { App, Stack, RemovalPolicy, aws_lambda } from 'aws-cdk-lib';
+import { join } from 'path'
+import * as s3deploy from '@aws-cdk/aws-s3-deployment';
 
 export class CdkStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+  constructor(app: App, id: string, props?: any) {
+    super(app, id);
 
-    const queue = new sqs.Queue(this, 'CdkQueue', {
-      visibilityTimeout: Duration.seconds(300)
+    let srcPath = "../go_lambda"
+
+    // Create an S3 bucket for the static website
+    const bucket = new s3.Bucket(this, 'MyStaticWebsiteBucket', {
+      websiteIndexDocument: 'index.html',
+      publicReadAccess: true,
     });
 
-    const topic = new sns.Topic(this, 'CdkTopic');
+    // Deploy the static website to the S3 bucket
+    new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+      sources: [s3deploy.Source.asset('./path/to/your/static/content')],
+      destinationBucket: bucket,
+    });
+    const genLambda = new aws_lambda.Function(this, 'OSortier-GenEvents', {
+      runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
+      handler: 'main',
+      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
+      environment: {
 
-    topic.addSubscription(new subs.SqsSubscription(queue));
+      },
+    }
+    );
+    const sortLambda = new aws_lambda.Function(this, 'OSortier-SortEvents', {
+      runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
+      handler: 'main',
+      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
+      environment: {
+
+      },
+    }
+    );
+    const getLambda = new aws_lambda.Function(this, 'OSortier-GetEvents', {
+      runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
+      handler: 'main',
+      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
+      environment: {
+
+      },
+    }
+    );
+
+    // Integrate the Lambda functions with the API Gateway resource
+    const genInt = new LambdaIntegration(genLambda);
+    const sortInt = new LambdaIntegration(sortLambda);
+    const getInt = new LambdaIntegration(getLambda);
+    // Create an API Gateway resource for each of the CRUD operations
+    const api = new RestApi(this, 'OSortierAGW', {
+      restApiName: 'OSortier'
+    });
+
+    const sort = api.root.addResource('sort');
+
+
+    const genEvents = sort.addResource('/gen/{num}?session={session}');
+    genEvents.addMethod('POST', genInt);
+    const sortEvents = sort.addResource('/sort?session={session}');
+    sortEvents.addMethod('GET', sortInt);
+    const getEvents = sort.addResource('/get?session={session}');
+    getEvents.addMethod('GET', getInt);
+
+    addCorsOptions(genEvents);
+    addCorsOptions(sortEvents);
+    addCorsOptions(getEvents);
   }
+}
+
+export function addCorsOptions(apiResource: IResource) {
+  apiResource.addMethod('OPTIONS', new MockIntegration({
+    integrationResponses: [{
+      statusCode: '200',
+      responseParameters: {
+        'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        'method.response.header.Access-Control-Allow-Origin': "'*'",
+        'method.response.header.Access-Control-Allow-Credentials': "'false'",
+        'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE'",
+      },
+    }],
+    // In case you want to use binary media types, comment out the following line
+    passthroughBehavior: PassthroughBehavior.NEVER,
+    requestTemplates: {
+      "application/json": "{\"statusCode\": 200}"
+    },
+  }), {
+    methodResponses: [{
+      statusCode: '200',
+      responseParameters: {
+        'method.response.header.Access-Control-Allow-Headers': true,
+        'method.response.header.Access-Control-Allow-Methods': true,
+        'method.response.header.Access-Control-Allow-Credentials': true,
+        'method.response.header.Access-Control-Allow-Origin': true,
+      },
+    }]
+  })
 }
