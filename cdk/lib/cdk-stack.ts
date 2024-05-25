@@ -3,7 +3,12 @@ import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, RemovalPolicy, aws_lambda } from 'aws-cdk-lib';
 import { join } from 'path'
-import * as s3deploy from '@aws-cdk/aws-s3-deployment';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+
 
 export class CdkStack extends Stack {
   constructor(app: App, id: string, props?: any) {
@@ -12,16 +17,22 @@ export class CdkStack extends Stack {
     let srcPath = "../go_lambda"
 
     // Create an S3 bucket for the static website
-    const bucket = new s3.Bucket(this, 'MyStaticWebsiteBucket', {
+    const bucket = new s3.Bucket(this, 'OSortierSite', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
     });
+    const eventStache = new s3.Bucket(this, 'OSortierEvents', {
+      publicReadAccess: false,
+
+    });
 
     // Deploy the static website to the S3 bucket
-    new s3deploy.BucketDeployment(this, 'DeployWebsite', {
-      sources: [s3deploy.Source.asset('./path/to/your/static/content')],
+    new s3deploy.BucketDeployment(this, 'DeployOSortier', {
+      sources: [s3deploy.Source.asset('../demo_site')],
       destinationBucket: bucket,
     });
+
+
     const genLambda = new aws_lambda.Function(this, 'OSortier-GenEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
       handler: 'main',
