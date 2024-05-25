@@ -51,14 +51,10 @@ func (bl *backlog) get(name1 string, count1 int) (Event, int) {
 	dest1, exists2 := bl.dests[name1+strconv.Itoa(count1)]
 
 	if exists1 {
-		//fmt.Println("event ret 1")
-		//fmt.Println(bl.Stored[source1])
 		return bl.Stored[source1], 0
 	} else if exists2 {
 		return bl.Stored[dest1], 0
 	} else {
-		//fmt.Println(keysFromMap(bl.sources))
-		//fmt.Println(name1, count1, source1, dest1, exists1, exists2)
 		return Event{}, -1
 	}
 }

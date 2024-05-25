@@ -38,9 +38,7 @@ func shuffle(events []Event) {
 	rand.Shuffle(len(events), func(i, j int) { (events)[i], (events)[j] = (events)[j], (events)[i] })
 }
 
-func gen() {
-	account_count := 20
-	event_count := 500000
+func gen(account_count int, event_count int) {
 
 	events := get_events(account_count, event_count)
 	shuffle(events)

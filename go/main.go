@@ -11,7 +11,7 @@ import (
 func loadEvents(Events *[]Event, path string) {
 	stateJSON, err := os.Open(path)
 	if err != nil {
-		//fmt.Println(err)
+		fmt.Println(err)
 		return
 	}
 	defer stateJSON.Close()
@@ -30,25 +30,21 @@ func saveSorted(events *[]Event, path string) {
 	defer file.Close()
 	file.WriteString(string(JSON))
 	if err != nil {
-		//fmt.Println("Could not save state")
-		//fmt.Println(err)
+		fmt.Println("Could not save state")
+		fmt.Println(err)
 	}
 }
 
 func eventHasSourcePreCondition(event Event, sequenceCounter *sequenceCounter) bool {
-	////fmt.Println(event.Source_key, event.Source_sequence_number, sequenceCounter.getSequenceCounter(event.Source_key))
 	return event.Source_sequence_number == sequenceCounter.getSequenceCounter(event.Source_key) || event.Source_sequence_number == 0
 }
 
 func eventHasDestPreCondition(event Event, sequenceCounter *sequenceCounter) bool {
-	////fmt.Println(event.Source_key, event.Destination_sequence_number, sequenceCounter.getSequenceCounter(event.Source_key))
 	return event.Destination_sequence_number == sequenceCounter.getSequenceCounter(event.Destination_key) || event.Destination_sequence_number == 0
 }
 
 func sendEvent(event Event, backlog *backlog, sequenceCounter *sequenceCounter, output *[]Event) {
-	////fmt.Println("sent")
-	////fmt.Println(event)
-	////fmt.Println(sequenceCounter.counter)
+
 	sc := sequenceCounter.incSequenceCounter(event.Source_key)
 	dc := sequenceCounter.incSequenceCounter(event.Destination_key)
 	if sc == 0 || dc == 0 {
@@ -56,8 +52,6 @@ func sendEvent(event Event, backlog *backlog, sequenceCounter *sequenceCounter, 
 	}
 	*output = append(*output, event)
 	backlog.remove(event)
-	//fmt.Println(event.Source_key, sequenceCounter.counter[event.Source_key])
-	//fmt.Println(event.Destination_key, sequenceCounter.counter[event.Destination_key])
 }
 
 func parkOrSend(event Event, sequenceCounter *sequenceCounter, backlog *backlog, limit int, output *[]Event) {
@@ -68,7 +62,6 @@ func parkOrSend(event Event, sequenceCounter *sequenceCounter, backlog *backlog,
 	}
 	sourceFullfilled := eventHasSourcePreCondition(event, sequenceCounter)
 	destFullfilled := eventHasDestPreCondition(event, sequenceCounter)
-	//fmt.Println(event, sourceFullfilled, destFullfilled)
 
 	if sourceFullfilled && destFullfilled {
 		sendEvent(event, backlog, sequenceCounter, output)
@@ -83,9 +76,7 @@ func parkOrSend(event Event, sequenceCounter *sequenceCounter, backlog *backlog,
 				parkOrSend(event2, sequenceCounter, backlog, limit-1, output)
 			}
 			limit2--
-			//fmt.Println("err count", err1, err2)
 			if limit2 == 0 || err1+err2 == -2 {
-				//fmt.Println("limit", limit2)
 				break
 			}
 		}
@@ -106,10 +97,12 @@ func sortEvents(Events *[]Event, sequenceCounter *sequenceCounter, backlog *back
 
 func main() {
 	fmt.Println("Generating events")
-	gen()
+	gen(30, 100000)
+
 	fmt.Println("Sorting Events")
 	eventList := make([]Event, 0, 3000000)
 	loadEvents(&eventList, "../data/shuffeled_events_go.json")
+
 	fmt.Println("Loaded Events")
 	sequenceCounter := &sequenceCounter{counter: make(map[string]int)}
 	backlog := &backlog{counter: 1, Stored: make(map[int]Event), sources: make(map[string]int), dests: make(map[string]int)}
