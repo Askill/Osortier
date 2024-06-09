@@ -8,6 +8,8 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import { BlockPublicAccess } from '@aws-cdk/aws-s3';
+import { Architecture } from '@aws-cdk/aws-lambda';
 
 
 export class CdkStack extends Stack {
@@ -16,48 +18,48 @@ export class CdkStack extends Stack {
 
     let srcPath = "../go_lambda"
 
-    // Create an S3 bucket for the static website
-    const bucket = new s3.Bucket(this, 'OSortierSite', {
-      websiteIndexDocument: 'index.html',
+    const store = new s3.Bucket(this, 'osortiereventstore', {
+      versioned: false,
+      bucketName: "osortiereventstore"
+    });
+
+    const site = new s3.Bucket(this, 'osortierdemosite', {
+      versioned: false,
+      websiteIndexDocument: "index.html",
       publicReadAccess: true,
+      blockPublicAccess: new BlockPublicAccess({
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        blockPublicPolicy: false,
+        restrictPublicBuckets: false,/*  */
+      }),
+      bucketName: "osortierdemosite"
     });
-    const eventStache = new s3.Bucket(this, 'OSortierEvents', {
-      publicReadAccess: false,
 
-    });
-
-    // Deploy the static website to the S3 bucket
-    new s3deploy.BucketDeployment(this, 'DeployOSortier', {
+    new s3deploy.BucketDeployment(this, 'DeployFiles', {
       sources: [s3deploy.Source.asset('../demo_site')],
-      destinationBucket: bucket,
+      destinationBucket: site,
     });
-
 
     const genLambda = new aws_lambda.Function(this, 'OSortier-GenEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
-      handler: 'main',
-      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
-      environment: {
-
-      },
+      handler: 'handler',
+      code: aws_lambda.Code.fromAsset(srcPath + '/gen/lambda-handler.zip'),
+      architecture: Architecture.X86_64
     }
     );
     const sortLambda = new aws_lambda.Function(this, 'OSortier-SortEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
-      handler: 'main',
-      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
-      environment: {
-
-      },
+      handler: 'handler',
+      code: aws_lambda.Code.fromAsset(srcPath + '/sort/lambda-handler.zip'),
+      architecture: Architecture.X86_64
     }
     );
     const getLambda = new aws_lambda.Function(this, 'OSortier-GetEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
-      handler: 'main',
-      code: aws_lambda.Code.fromAsset(srcPath + '/lambda-handler.zip'),
-      environment: {
-
-      },
+      handler: 'handler',
+      code: aws_lambda.Code.fromAsset(srcPath + '/get/lambda-handler.zip'),
+      architecture: Architecture.X86_64
     }
     );
 
@@ -71,18 +73,38 @@ export class CdkStack extends Stack {
     });
 
     const sort = api.root.addResource('sort');
+    const events = api.root.addResource('events');
+    events.addMethod('POST', genInt, {
+      requestParameters:
+      {
+        'method.request.querystring.session': true,
+        'method.request.querystring.num': true,
+      },
+    });
+    events.addMethod('GET', getInt, {
+      requestParameters:
+      {
+        'method.request.querystring.session': true,
+        'method.request.querystring.num': true,
+      },
+    });
+    sort.addMethod('POST', sortInt, {
+      requestParameters:
+      {
+        'method.request.querystring.session': true,
+        'method.request.querystring.num': true,
+      },
+    });
 
+    addCorsOptions(sort);
+    addCorsOptions(events);
 
-    const genEvents = sort.addResource('/gen/{num}?session={session}');
-    genEvents.addMethod('POST', genInt);
-    const sortEvents = sort.addResource('/sort?session={session}');
-    sortEvents.addMethod('GET', sortInt);
-    const getEvents = sort.addResource('/get?session={session}');
-    getEvents.addMethod('GET', getInt);
-
-    addCorsOptions(genEvents);
-    addCorsOptions(sortEvents);
-    addCorsOptions(getEvents);
+    store.grantReadWrite(genLambda)
+    store.grantReadWrite(getLambda)
+    store.grantReadWrite(sortLambda)
+    store.grantPut(genLambda)
+    store.grantPut(getLambda)
+    store.grantPut(sortLambda)
   }
 }
 
