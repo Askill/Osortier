@@ -147,14 +147,15 @@ func sortEvents(Events *[]Event, sequenceCounter *sequenceCounter, backlog *back
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	fmt.Println("Sorting Events")
 	// max 10 mil is set in gen
-	eventList := make([]Event, 0, 100)
+	eventCount, _ := := strconv.Atoi(request.QueryStringParameters["num"])
+	eventList := make([]Event, 0, eventCount)
 
 	getUnsorted(&eventList, request.QueryStringParameters["session"]+"/unsorted_session_data.json", "osortiereventstore")
 
 	fmt.Println("Loaded Events")
 	sequenceCounter := &sequenceCounter{counter: make(map[string]int)}
 	backlog := &backlog{counter: 1, Stored: make(map[int]Event), sources: make(map[string]int), dests: make(map[string]int)}
-	output := make([]Event, 0, 100)
+	output := make([]Event, 0, eventCount)
 
 	start := time.Now()
 	sortEvents(&eventList, sequenceCounter, backlog, &output)

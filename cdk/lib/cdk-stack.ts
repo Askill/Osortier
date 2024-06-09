@@ -1,7 +1,7 @@
 import { IResource, LambdaIntegration, MockIntegration, PassthroughBehavior, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, RemovalPolicy, aws_lambda } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, aws_lambda, Duration } from 'aws-cdk-lib';
 import { join } from 'path'
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
@@ -64,9 +64,9 @@ export class CdkStack extends Stack {
     );
 
     // Integrate the Lambda functions with the API Gateway resource
-    const genInt = new LambdaIntegration(genLambda);
-    const sortInt = new LambdaIntegration(sortLambda);
-    const getInt = new LambdaIntegration(getLambda);
+    const genInt = new LambdaIntegration(genLambda, {timeout: Duration.seconds(29)});
+    const sortInt = new LambdaIntegration(sortLambda, {timeout: Duration.seconds(29)});
+    const getInt = new LambdaIntegration(getLambda, {timeout: Duration.seconds(29)});
     // Create an API Gateway resource for each of the CRUD operations
     const api = new RestApi(this, 'OSortierAGW', {
       restApiName: 'OSortier'
