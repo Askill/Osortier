@@ -16,7 +16,7 @@ import {
       This is a demo the of a high performance event sorting algorithm.<br>
       Event sorting is a hard problem, however I can offer you a high throughput and ultra low cost solution.<br>
       <br>
-    <h2 class="green">Performace</h2><br>
+    <h2 class="green">Performance</h2><br>
     <div class="headlines">
       <b>5 million events per minute</b> <br>
       or about<br>
@@ -29,8 +29,8 @@ import {
       <br>assuming 30 mio. events per day<br>
       <br>
 
-      Yes, you read correctly: about 28 cents per month,<br> although it would actually still be in the free
-      tier.<br><br>
+      Yes, you read correctly: about 28 cents per month.
+      <br><br>
     </div>
     <h2 class="green">How it works</h2>
     <MDBTable>

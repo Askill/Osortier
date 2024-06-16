@@ -20,11 +20,6 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.204.0",
-    "@aws-cdk/aws-lambda": "^1.204.0",
-    "@aws-cdk/aws-lambda-nodejs": "^1.204.0",
-    "@aws-cdk/aws-s3": "^1.204.0",
-    "@aws-cdk/aws-s3-deployment": "^1.204.0",
     "aws-cdk-lib": "2.110.1",
     "constructs": "^10.0.0"
   }

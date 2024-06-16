@@ -1,16 +1,11 @@
 import { IResource, LambdaIntegration, MockIntegration, PassthroughBehavior, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, RemovalPolicy, aws_lambda, Duration } from 'aws-cdk-lib';
-import { join } from 'path'
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
-import { BlockPublicAccess } from '@aws-cdk/aws-s3';
-import { Architecture } from '@aws-cdk/aws-lambda';
-import * as iam from '@aws-cdk/aws-iam';
+import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
+import { Architecture } from 'aws-cdk-lib/aws-lambda';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 export class CdkStack extends Stack {
   constructor(app: App, id: string, props?: any) {
@@ -89,7 +84,9 @@ export class CdkStack extends Stack {
     const getInt = new LambdaIntegration(getLambda, { timeout: Duration.seconds(29) });
     // Create an API Gateway resource for each of the CRUD operations
     const api = new RestApi(this, 'OSortierAGW', {
-      restApiName: 'OSortier'
+      restApiName: 'OSortier',
+      binaryMediaTypes: ["*/*"],
+      minimumCompressionSize: 0,
     });
 
     const sort = api.root.addResource('sort');
@@ -125,32 +122,66 @@ export class CdkStack extends Stack {
     store.grantPut(genLambda)
     store.grantPut(getLambda)
     store.grantPut(sortLambda)
-// Add a root resource and method
-const executeRole = new iam.Role(this, "role", {
-  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-  path: "/apigw-service-role/"
-});
+    // Add a root resource and method
+    const executeRole = new iam.Role(this, "api-gateway-s3-assume-tole", {
+      assumedBy: new iam.ServicePrincipal("apigateway.amazonaws.com"),
+      roleName: "API-Gateway-S3-Integration-Role",
+    });
+    executeRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:Get'],
+      resources: [`${site.bucketArn}/*`],
+    }));
     // Define the integration with S3
-    const s3Integration = new apigw.AwsIntegration({
-      service: 's3',
-      action: 'GetObject',
+    const indexPageIntegration = new apigw.AwsIntegration({
+      service: "s3",
       integrationHttpMethod: "GET",
+      path: `${site.bucketName}/index.html`,
       options: {
         credentialsRole: executeRole,
-        requestParameters: {
-          'integration.request.header.Content-Type': "'application/octet-stream'",
-          'integration.request.path.folder': 'path',
-          'integration.request.path.key': 'key',
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+        integrationResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Content-Type": "integration.response.header.Content-Type",
+            "method.response.header.Timestamp":  "integration.response.header.Date"
+          },
         },
-        requestTemplates: {
-          'application/json': '{"url": "${path}"}',
-        },
-      },
+      ]},
     });
-    let root = api.root.addMethod('GET', s3Integration);
-    
 
-
+    // Configure the integration response
+    const methodOptions: apigw.MethodOptions = { methodResponses: [
+      { statusCode: '200', responseParameters:   {"method.response.header.Content-Type": true,  "method.response.header.Timestamp": true}},
+      { statusCode: '400' },
+      { statusCode: '500' }
+    ]};
+    // we add a GET method to the root resource. 
+    api.root.addMethod("GET", indexPageIntegration, methodOptions);
+    addCorsOptions(api.root);
+    const assetsIntegration = new apigw.AwsIntegration({
+      service: "s3",
+      integrationHttpMethod: "GET",
+      path: `${site.bucketName}/assets/{path}`,
+      options: {
+        credentialsRole: executeRole,
+        passthroughBehavior: apigw.PassthroughBehavior.WHEN_NO_MATCH,
+        requestParameters: {
+          "integration.request.path.path": "method.request.path.path"
+        },
+        integrationResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Content-Type": "integration.response.header.Content-Type",
+            "method.response.header.Timestamp": "integration.response.header.Date"
+          },
+        },
+      ]},
+    });
+    const assets = api.root.addResource("assets").addResource("{path}");
+    addCorsOptions(assets)
+    assets.addMethod("GET", assetsIntegration, {...methodOptions, requestParameters: {"method.request.path.path": true}});
   }
 }
 
