@@ -10,7 +10,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaNodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { BlockPublicAccess } from '@aws-cdk/aws-s3';
 import { Architecture } from '@aws-cdk/aws-lambda';
-
+import * as iam from '@aws-cdk/aws-iam';
 
 export class CdkStack extends Stack {
   constructor(app: App, id: string, props?: any) {
@@ -20,9 +20,22 @@ export class CdkStack extends Stack {
 
     const store = new s3.Bucket(this, 'osortiereventstore', {
       versioned: false,
-      bucketName: "osortiereventstore"
+      bucketName: "osortiereventstore",
+      publicReadAccess: true,
+      blockPublicAccess: new BlockPublicAccess({
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        blockPublicPolicy: false,
+        restrictPublicBuckets: false,
+      }),
+      removalPolicy: RemovalPolicy.DESTROY,
+
     });
 
+    store.addLifecycleRule({
+      enabled: true,
+      expiration: Duration.days(1),
+    });
     const site = new s3.Bucket(this, 'osortierdemosite', {
       versioned: false,
       websiteIndexDocument: "index.html",
@@ -31,13 +44,14 @@ export class CdkStack extends Stack {
         blockPublicAcls: false,
         ignorePublicAcls: false,
         blockPublicPolicy: false,
-        restrictPublicBuckets: false,/*  */
+        restrictPublicBuckets: false,
       }),
-      bucketName: "osortierdemosite"
+      bucketName: "osortierdemosite",
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     new s3deploy.BucketDeployment(this, 'DeployFiles', {
-      sources: [s3deploy.Source.asset('../demo_site')],
+      sources: [s3deploy.Source.asset('../demo_site/osortier/dist')],
       destinationBucket: site,
     });
 
@@ -45,28 +59,34 @@ export class CdkStack extends Stack {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
       handler: 'handler',
       code: aws_lambda.Code.fromAsset(srcPath + '/gen/lambda-handler.zip'),
-      architecture: Architecture.X86_64
+      architecture: Architecture.X86_64,
+      memorySize: 4096,
+      timeout: Duration.seconds(29)
     }
     );
     const sortLambda = new aws_lambda.Function(this, 'OSortier-SortEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
       handler: 'handler',
       code: aws_lambda.Code.fromAsset(srcPath + '/sort/lambda-handler.zip'),
-      architecture: Architecture.X86_64
+      architecture: Architecture.X86_64,
+      memorySize: 4096,
+      timeout: Duration.seconds(29)
     }
     );
     const getLambda = new aws_lambda.Function(this, 'OSortier-GetEvents', {
       runtime: aws_lambda.Runtime.PROVIDED_AL2023, // Use the provided runtime
       handler: 'handler',
       code: aws_lambda.Code.fromAsset(srcPath + '/get/lambda-handler.zip'),
-      architecture: Architecture.X86_64
+      architecture: Architecture.X86_64,
+      memorySize: 1024,
+      timeout: Duration.seconds(29)
     }
     );
 
     // Integrate the Lambda functions with the API Gateway resource
-    const genInt = new LambdaIntegration(genLambda, {timeout: Duration.seconds(29)});
-    const sortInt = new LambdaIntegration(sortLambda, {timeout: Duration.seconds(29)});
-    const getInt = new LambdaIntegration(getLambda, {timeout: Duration.seconds(29)});
+    const genInt = new LambdaIntegration(genLambda, { timeout: Duration.seconds(29), });
+    const sortInt = new LambdaIntegration(sortLambda, { timeout: Duration.seconds(29) });
+    const getInt = new LambdaIntegration(getLambda, { timeout: Duration.seconds(29) });
     // Create an API Gateway resource for each of the CRUD operations
     const api = new RestApi(this, 'OSortierAGW', {
       restApiName: 'OSortier'
@@ -105,6 +125,32 @@ export class CdkStack extends Stack {
     store.grantPut(genLambda)
     store.grantPut(getLambda)
     store.grantPut(sortLambda)
+// Add a root resource and method
+const executeRole = new iam.Role(this, "role", {
+  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+  path: "/apigw-service-role/"
+});
+    // Define the integration with S3
+    const s3Integration = new apigw.AwsIntegration({
+      service: 's3',
+      action: 'GetObject',
+      integrationHttpMethod: "GET",
+      options: {
+        credentialsRole: executeRole,
+        requestParameters: {
+          'integration.request.header.Content-Type': "'application/octet-stream'",
+          'integration.request.path.folder': 'path',
+          'integration.request.path.key': 'key',
+        },
+        requestTemplates: {
+          'application/json': '{"url": "${path}"}',
+        },
+      },
+    });
+    let root = api.root.addMethod('GET', s3Integration);
+    
+
+
   }
 }
 

@@ -15,7 +15,7 @@ def test_order(l):
             keys.append(event.source_key)
         if event.destination_key not in keys:
             keys.append(event.destination_key)
-    partitions = dict(zip(keys, [[] for i in range(len(keys))]))
+    partitions = dict(zip(keys, [[] for _ in range(len(keys))]))
 
     for event in l:
         partitions[event.source_key].append(event.source_sequence_number)

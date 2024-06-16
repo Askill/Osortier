@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -38,35 +36,13 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		return events.APIGatewayProxyResponse{StatusCode: http.StatusInternalServerError}, fmt.Errorf("error listing objects: %v", err)
 	}
 
-	var jsonData []byte
-	for _, content := range result.Contents {
-		object, err := svc.GetObject(context.TODO(),
-			&s3.GetObjectInput{
-
-				Bucket: aws.String(bucketName),
-				Key:    content.Key,
-			})
-		if err != nil {
-			log.Printf("failed to read object %q, %v\n", *content.Key, err)
-			continue
-		}
-
-		body, err := io.ReadAll(object.Body)
-		if err != nil {
-			log.Printf("failed to read body, %v\n", err)
-			continue
-		}
-
-		jsonData = append(jsonData, body...)
-	}
-
-	if len(jsonData) == 0 {
+	if len(result.Contents) == 0 {
 		return events.APIGatewayProxyResponse{StatusCode: http.StatusNotFound}, nil
 	}
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
-		Body:       string(jsonData),
+		Body:       "{'downloadURL': '" + "https://" + bucketName + ".s3.eu-central-1.amazonaws.com/" + id + "'}",
 	}, nil
 }
 
