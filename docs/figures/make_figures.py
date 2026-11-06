@@ -300,7 +300,7 @@ def fig_deploy():
                 t(x + w / 2, y + h / 2 - 3, esc(title), 14, INK, weight=700, anchor="middle"),
                 t(x + w / 2, y + h / 2 + 15, esc(sub), 12, SLATE_T, anchor="middle")]
     top = y0 + 40
-    o += box(32, top + 70, 130, 60, "Browser", "Vue demo site")
+    o += box(32, top + 70, 130, 60, "Browser", "demo website")
     o += box(220, top + 70, 150, 60, "API Gateway", "REST API OSortier")
     o += box(450, top, 170, 50, "gen", "POST /events")
     o += box(450, top + 75, 170, 50, "sort", "POST /sort", RED)

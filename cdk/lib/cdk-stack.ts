@@ -6,6 +6,7 @@ import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import { Architecture } from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as fs from 'fs';
 
 export class CdkStack extends Stack {
   constructor(app: App, id: string, props?: any) {
@@ -45,8 +46,15 @@ export class CdkStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY
     });
 
+    // The demo site lives in its own repository, osortier-site, checked out next to this one.
+    // Build it there first, or pass -c siteDist=<path to osortier/dist>. A missing build fails
+    // the synth on purpose: deploying without it would empty the site bucket.
+    const siteDist: string = this.node.tryGetContext('siteDist') ?? '../../osortier-site/osortier/dist';
+    if (!fs.existsSync(siteDist)) {
+      throw new Error(`Demo site build not found at ${siteDist}. Run "npm run build" in osortier-site/osortier, or pass -c siteDist=<path>.`);
+    }
     new s3deploy.BucketDeployment(this, 'DeployFiles', {
-      sources: [s3deploy.Source.asset('../demo_site/osortier/dist')],
+      sources: [s3deploy.Source.asset(siteDist)],
       destinationBucket: site,
     });
 

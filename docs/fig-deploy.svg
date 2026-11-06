@@ -6,7 +6,7 @@
 <text x="32" y="106" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >Three Go Lambdas behind one REST API. S3 holds the session files and the site.</text>
 <rect x="32" y="241" width="130" height="60" fill="#fff" stroke="#121212" stroke-width="1"/>
 <text x="97.0" y="268.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" >Browser</text>
-<text x="97.0" y="286.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="middle" >Vue demo site</text>
+<text x="97.0" y="286.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="middle" >demo website</text>
 <rect x="220" y="241" width="150" height="60" fill="#fff" stroke="#121212" stroke-width="1"/>
 <text x="295.0" y="268.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" >API Gateway</text>
 <text x="295.0" y="286.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="middle" >REST API OSortier</text>
