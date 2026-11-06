@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650">
+<rect width="1000" height="650" fill="#FFFFFF"/>
+<text x="32" y="36" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.9">FIGURE 1</text>
+<text x="32" y="74" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="30" font-weight="700" fill="#121212" text-anchor="start" >Where the disorder comes from</text>
+<text x="32" y="106" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >Each producer owns its accounts and numbers their transactions in order. Anything</text>
+<text x="32" y="131" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >between producer and consumer may reorder them. Osortier puts them back in order.</text>
+<text x="32" y="204" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">PRODUCERS</text>
+<text x="250" y="204" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">TRANSPORT AND PROCESSING</text>
+<text x="640" y="204" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">OSORTIER</text>
+<text x="850" y="204" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">CONSUMER</text>
+<rect x="32" y="240" width="138" height="56" fill="#fff" stroke="#121212"/>
+<text x="44" y="263" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="start" >Producer 1</text>
+<text x="44" y="283" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >accounts a, b</text>
+<rect x="32" y="348" width="138" height="56" fill="#fff" stroke="#121212"/>
+<text x="44" y="371" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="start" >Producer 2</text>
+<text x="44" y="391" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >accounts c, d</text>
+<rect x="32" y="456" width="138" height="56" fill="#fff" stroke="#121212"/>
+<text x="44" y="479" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="start" >Producer 3</text>
+<text x="44" y="499" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >accounts e, f</text>
+<path d="M170 250.0 C321 250.0 321 362.8 399 362.8 S478 324.5 640 324.5" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="251.0" x2="850" y2="251.0" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 257.0 C339 257.0 339 410.5 423 410.5 S508 309.8 640 309.8" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="265.7" x2="850" y2="265.7" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 264.0 C350 264.0 350 246.0 394 246.0 S438 339.2 640 339.2" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="280.4" x2="850" y2="280.4" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 271.0 C356 271.0 356 453.9 429 453.9 S502 265.7 640 265.7" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="295.1" x2="850" y2="295.1" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 278.0 C289 278.0 289 290.7 395 290.7 S501 427.5 640 427.5" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="309.8" x2="850" y2="309.8" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 285.0 C278 285.0 278 237.3 372 237.3 S465 412.8 640 412.8" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="324.5" x2="850" y2="324.5" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 358.0 C260 358.0 260 349.9 384 349.9 S509 251.0 640 251.0" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="339.2" x2="850" y2="339.2" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 365.0 C316 365.0 316 259.3 429 259.3 S542 398.1 640 398.1" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="353.9" x2="850" y2="353.9" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 372.0 C280 372.0 280 379.6 401 379.6 S521 353.9 640 353.9" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="368.6" x2="850" y2="368.6" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 379.0 C254 379.0 254 266.2 376 266.2 S498 471.6 640 471.6" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="383.4" x2="850" y2="383.4" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 386.0 C263 386.0 263 254.7 364 254.7 S465 280.4 640 280.4" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="398.1" x2="850" y2="398.1" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 393.0 C252 393.0 252 295.8 382 295.8 S512 295.1 640 295.1" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="412.8" x2="850" y2="412.8" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 466.0 C361 466.0 361 341.1 399 341.1 S436 383.4 640 383.4" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="427.5" x2="850" y2="427.5" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 473.0 C335 473.0 335 394.5 408 394.5 S480 442.2 640 442.2" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="442.2" x2="850" y2="442.2" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 480.0 C274 480.0 274 330.3 392 330.3 S511 368.6 640 368.6" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="456.9" x2="850" y2="456.9" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 487.0 C287 487.0 287 350.8 360 350.8 S432 486.3 640 486.3" fill="none" stroke="#006BA2" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="471.6" x2="850" y2="471.6" stroke="#006BA2" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 494.0 C361 494.0 361 434.0 403 434.0 S446 501.0 640 501.0" fill="none" stroke="#E3120B" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="486.3" x2="850" y2="486.3" stroke="#E3120B" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M170 501.0 C251 501.0 251 372.3 369 372.3 S486 456.9 640 456.9" fill="none" stroke="#6E7A8A" stroke-opacity="0.55" stroke-width="1.6"/>
+<line x1="790" y1="501.0" x2="850" y2="501.0" stroke="#6E7A8A" stroke-opacity="0.8" stroke-width="1.6"/>
+<rect x="262" y="248" width="124" height="30" fill="#fff" fill-opacity="0.92" stroke="#6E7A8A"/>
+<text x="324" y="268" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="middle" >Kafka partitions</text>
+<rect x="432" y="322" width="124" height="30" fill="#fff" fill-opacity="0.92" stroke="#6E7A8A"/>
+<text x="494" y="342" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="middle" >retries</text>
+<rect x="290" y="404" width="124" height="30" fill="#fff" fill-opacity="0.92" stroke="#6E7A8A"/>
+<text x="352" y="424" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="middle" >parallel workers</text>
+<rect x="440" y="484" width="124" height="30" fill="#fff" fill-opacity="0.92" stroke="#6E7A8A"/>
+<text x="502" y="504" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="middle" >batches in S3</text>
+<rect x="640" y="226" width="150" height="300" fill="#fff" stroke="#E3120B" stroke-width="2"/>
+<text x="715" y="368.0" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="700" fill="#121212" text-anchor="middle" >Osortier</text>
+<text x="715" y="390.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >stateless,</text>
+<text x="715" y="406.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >one thread, O(n)</text>
+<rect x="850" y="226" width="118" height="300" fill="#fff" stroke="#121212"/>
+<text x="909" y="368.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" >Applies</text>
+<text x="909" y="386.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >transactions to</text>
+<text x="909" y="402.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >account state</text>
+<text x="32" y="550" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >Owns the account state.</text>
+<text x="32" y="566" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >Numbers each account's</text>
+<text x="32" y="582" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >transactions without gaps.</text>
+<text x="250" y="550" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >At-least-once and unordered.</text>
+<text x="250" y="566" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >Nothing here has to keep order</text>
+<text x="250" y="582" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >or hold a lock.</text>
+<text x="640" y="550" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >Keeps nothing between runs.</text>
+<text x="640" y="566" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >Needs no database.</text>
+<text x="850" y="550" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >Needs every account</text>
+<text x="850" y="566" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >in exact sequence.</text>
+<line x1="32" y1="611" x2="968" y2="611" stroke="#D8D8D8"/>
+<text x="32" y="632" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#6E7A8A" text-anchor="start" >Schematic. Strands are transactions, coloured by one of their accounts. Producer and system names are examples.</text>
+</svg>

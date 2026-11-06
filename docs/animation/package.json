@@ -1,0 +1,16 @@
+{
+  "name": "osortier-explainer",
+  "private": true,
+  "type": "module",
+  "description": "Source of docs/osortier-explainer.mp4 and docs/cascade.gif (Kinetograph project)",
+  "scripts": {
+    "still": "kinetograph still src/index.tsx",
+    "lint": "kinetograph lint src/index.tsx --comp Main",
+    "render": "kinetograph render src/index.tsx --comp Main -o out/osortier-explainer.mp4 --crf 20",
+    "render:gif": "kinetograph render src/index.tsx --comp Cascade -o out/cascade.mp4 --crf 16"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "kinetograph": "^0.2.5"
+  }
+}

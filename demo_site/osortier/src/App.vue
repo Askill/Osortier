@@ -6,16 +6,21 @@ import TheWelcome from './components/TheWelcome.vue'
 <template  >
   <header  >
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <HelloWorld/>
     </div>
   </header>
 
   <main>
+    <div class="spacer"></div>
     <TheWelcome />
   </main>
 </template>
 
 <style scoped>
+.spacer{
+  height: 6em;
+}
+
 header {
   line-height: 1.5;
 }

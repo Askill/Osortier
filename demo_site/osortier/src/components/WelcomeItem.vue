@@ -48,7 +48,7 @@ h3 {
   }
 
   i {
-    top: calc(50% - 25px);
+    top: 2em;
     left: -26px;
     position: absolute;
     border: 1px solid var(--color-border);
@@ -58,7 +58,7 @@ h3 {
     height: 50px;
   }
 
-  .item:before {
+  .item:nth-child(n+3):before {
     content: ' ';
     border-left: 1px solid var(--color-border);
     position: absolute;
@@ -72,8 +72,9 @@ h3 {
     border-left: 1px solid var(--color-border);
     position: absolute;
     left: 0;
-    top: calc(50% + 25px);
-    height: calc(50% - 25px);
+    top: calc(10% + 25px);
+    height: calc(100% - 35px);
+    z-index: -1;
   }
 
   .item:first-of-type:before {

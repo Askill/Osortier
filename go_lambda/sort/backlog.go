@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -9,17 +10,36 @@ type backlog struct {
 	dests   map[string]int
 	Stored  map[int]Event
 	counter int
+
+	// Slot conflicts: a second, different event claiming a position already
+	// held by a parked event. First claim wins, the loser is counted, never
+	// indexed over.
+	conflicts      int
+	conflictEvents []Event
 }
 
-func (bl *backlog) store(event Event) {
-	exists := bl.findEvent(event)
-	if exists != -1 {
-		return
+func (bl *backlog) store(event Event) bool {
+	if id := bl.findEvent(event); id != -1 {
+		return false // already parked (same event, or its reversal)
 	}
+	srcSlot := event.Source_key + strconv.Itoa(event.Source_sequence_number)
+	dstSlot := event.Destination_key + strconv.Itoa(event.Destination_sequence_number)
+
+	// A position (key, seq) belongs to exactly one event. If any of the four
+	// slots it claims is already indexed by a different parked event, this is
+	// inconsistent input. Refuse instead of overwriting: rejecting keeps the
+	// first claimant reachable and records the conflicting event.
+	if bl.sources[srcSlot] != 0 || bl.dests[srcSlot] != 0 || bl.sources[dstSlot] != 0 || bl.dests[dstSlot] != 0 {
+		bl.conflicts++
+		bl.conflictEvents = append(bl.conflictEvents, event)
+		return false
+	}
+
 	bl.counter = bl.counter + 1
 	bl.Stored[bl.counter] = event
-	bl.sources[event.Source_key+strconv.Itoa(event.Source_sequence_number)] = bl.counter
-	bl.dests[event.Destination_key+strconv.Itoa(event.Destination_sequence_number)] = bl.counter
+	bl.sources[srcSlot] = bl.counter
+	bl.dests[dstSlot] = bl.counter
+	return true
 }
 
 func (bl *backlog) findEvent(event Event) int {
@@ -66,4 +86,40 @@ func (bl *backlog) remove(event Event) {
 		delete(bl.dests, event.Destination_key+strconv.Itoa(event.Destination_sequence_number))
 		delete(bl.Stored, id)
 	}
+}
+
+type stall struct {
+	event   Event
+	blocked []string
+}
+
+// stalls reports every parked event with the chains it is still waiting on.
+// Without this, a missing event upstream stalls its chains silently.
+func (bl *backlog) stalls(sc *sequenceCounter) []stall {
+	report := []stall{}
+	for _, event := range bl.Stored {
+		blocked := []string{}
+		srcCounter := sc.getSequenceCounter(event.Source_key)
+		if event.Source_sequence_number != srcCounter {
+			need := fmt.Sprintf("source %s.%d blocked: counter(%s)=%d",
+				event.Source_key, event.Source_sequence_number, event.Source_key, srcCounter)
+			if srcCounter > event.Source_sequence_number {
+				need = need + fmt.Sprintf(" (already passed, position unreachable)")
+			}
+			blocked = append(blocked, need)
+		}
+		dstCounter := sc.getSequenceCounter(event.Destination_key)
+		if event.Destination_sequence_number != dstCounter {
+			need := fmt.Sprintf("destination %s.%d blocked: counter(%s)=%d",
+				event.Destination_key, event.Destination_sequence_number, event.Destination_key, dstCounter)
+			if dstCounter > event.Destination_sequence_number {
+				need = need + fmt.Sprintf(" (already passed, position unreachable)")
+			}
+			blocked = append(blocked, need)
+		}
+		if len(blocked) > 0 {
+			report = append(report, stall{event: event, blocked: blocked})
+		}
+	}
+	return report
 }

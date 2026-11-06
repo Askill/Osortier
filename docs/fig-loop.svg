@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="920" viewBox="0 0 1000 920">
+<rect width="1000" height="920" fill="#FFFFFF"/>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#121212"/></marker></defs>
+<text x="32" y="36" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.9">FIGURE 4</text>
+<text x="32" y="74" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="30" font-weight="700" fill="#121212" text-anchor="start" >The whole algorithm</text>
+<text x="32" y="106" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >Two stores track the preconditions of every waiting transaction: a counter per account and a</text>
+<text x="32" y="131" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >backlog indexed by slot. Each emit can meet at most two preconditions, so it checks two slots.</text>
+<rect x="32" y="236" width="150" height="60" fill="#fff" stroke="#121212"/>
+<text x="107.0" y="262" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="middle" >next transaction</text>
+<text x="107.0" y="280" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >from the input</text>
+<path d="M210 266 L300 214 L390 266 L300 318 Z" fill="#fff" stroke="#E3120B" stroke-width="2"/>
+<text x="300" y="262" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" >ready?</text>
+<text x="300" y="280" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11.5" font-weight="400" fill="#586173" text-anchor="middle" >both preconditions met</text>
+<rect x="470" y="236" width="190" height="60" fill="#fff" stroke="#121212"/>
+<text x="565.0" y="262" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="middle" >emit</text>
+<text x="565.0" y="280" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >advance both counters</text>
+<rect x="740" y="236" width="228" height="60" fill="#fff" stroke="#121212"/>
+<text x="854.0" y="253" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="middle" >wake</text>
+<text x="854.0" y="271" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >look up the next slot</text>
+<text x="854.0" y="289" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >on each of its accounts</text>
+<rect x="205" y="361" width="190" height="60" fill="#fff" stroke="#121212"/>
+<text x="300.0" y="387" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="middle" >park</text>
+<text x="300.0" y="405" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >store under both slots</text>
+<line x1="182" y1="266" x2="208" y2="266" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+<line x1="390" y1="266" x2="468" y2="266" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/><text x="420" y="258" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >yes</text>
+<line x1="300" y1="318" x2="300" y2="359" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/><text x="310" y="344" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >no</text>
+<line x1="660" y1="266" x2="738" y2="266" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+<path d="M854 236 C854 186 565 186 565 234" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+<text x="710" y="196" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >found and now ready: emit it too</text>
+<path d="M854 296 L854 466 L80 466 L80 298" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+<text x="600" y="458" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >nothing ready: back to the next transaction</text>
+<path d="M205 391 L134 391 L134 298" stroke="#121212" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+<line x1="32" y1="498" x2="968" y2="498" stroke="#D8D8D8"/>
+<text x="32" y="524" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">THE TWO STORES, AFTER THE FIFTH ARRIVAL</text>
+<rect x="32" y="546" width="250" height="206" fill="#fff" stroke="#121212"/>
+<text x="46" y="570" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="15" font-weight="700" fill="#121212" text-anchor="start" >Counters</text>
+<text x="46" y="588" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="start" >next slot each account expects</text>
+<text x="46" y="604" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="start" >read by ready?, advanced by emit</text>
+<line x1="46" y1="658" x2="268" y2="658" stroke="#D8D8D8"/>
+<text x="52" y="646" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20" font-weight="700" fill="#006BA2" text-anchor="start" >a</text>
+<text x="252" y="646" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="20" font-weight="700" fill="#121212" text-anchor="end" >1</text>
+<line x1="46" y1="696" x2="268" y2="696" stroke="#D8D8D8"/>
+<text x="52" y="684" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20" font-weight="700" fill="#E3120B" text-anchor="start" >b</text>
+<text x="252" y="684" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="20" font-weight="700" fill="#121212" text-anchor="end" >2</text>
+<line x1="46" y1="734" x2="268" y2="734" stroke="#D8D8D8"/>
+<text x="52" y="722" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20" font-weight="700" fill="#6E7A8A" text-anchor="start" >c</text>
+<text x="252" y="722" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="20" font-weight="700" fill="#121212" text-anchor="end" >1</text>
+<rect x="312" y="546" width="656" height="206" fill="#fff" stroke="#121212"/>
+<text x="326" y="570" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="15" font-weight="700" fill="#121212" text-anchor="start" >Backlog</text>
+<text x="326" y="588" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="start" >waiting transactions, stored under both of their slots</text>
+<text x="326" y="604" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#586173" text-anchor="start" >written by park, looked up by wake, cleared by emit</text>
+<text x="326" y="632" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.2">STORED AT</text>
+<text x="462" y="632" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.2">TRANSACTION</text>
+<text x="582" y="632" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.2">SOURCE PRECONDITION</text>
+<text x="772" y="632" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="10.5" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.2">DESTINATION PRECONDITION</text>
+<text x="326" y="665" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="start" ><tspan fill="#006BA2">a2</tspan><tspan fill="#6E7A8A"> and </tspan><tspan fill="#E3120B">b2</tspan></text>
+<rect x="462" y="646.0" width="66" height="28" fill="#fff" stroke="#121212"/>
+<text x="495.0" y="664.68" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a2</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b2</tspan></text>
+<circle cx="589" cy="660" r="6" fill="#fff" stroke="#121212" stroke-width="1.5"/>
+<text x="602" y="664.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >a at 2: waiting, a is at 1</text>
+<circle cx="779" cy="660" r="6" fill="#121212" stroke="#121212" stroke-width="1.5"/>
+<text x="792" y="664.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >b at 2: met</text>
+<text x="326" y="697" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="start" ><tspan fill="#006BA2">a3</tspan><tspan fill="#6E7A8A"> and </tspan><tspan fill="#6E7A8A">c3</tspan></text>
+<rect x="462" y="678.0" width="66" height="28" fill="#fff" stroke="#121212"/>
+<text x="495.0" y="696.68" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a3</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#6E7A8A">c3</tspan></text>
+<circle cx="589" cy="692" r="6" fill="#fff" stroke="#121212" stroke-width="1.5"/>
+<text x="602" y="696.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >a at 3: waiting, a is at 1</text>
+<circle cx="779" cy="692" r="6" fill="#fff" stroke="#121212" stroke-width="1.5"/>
+<text x="792" y="696.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >c at 3: waiting, c is at 1</text>
+<text x="326" y="729" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13.5" font-weight="700" fill="#121212" text-anchor="start" ><tspan fill="#6E7A8A">c2</tspan><tspan fill="#6E7A8A"> and </tspan><tspan fill="#E3120B">b3</tspan></text>
+<rect x="462" y="710.0" width="66" height="28" fill="#fff" stroke="#121212"/>
+<text x="495.0" y="728.68" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="13" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#6E7A8A">c2</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b3</tspan></text>
+<circle cx="589" cy="724" r="6" fill="#fff" stroke="#121212" stroke-width="1.5"/>
+<text x="602" y="728.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >c at 2: waiting, c is at 1</text>
+<circle cx="779" cy="724" r="6" fill="#fff" stroke="#121212" stroke-width="1.5"/>
+<text x="792" y="728.5" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="start" >b at 3: waiting, b is at 2</text>
+<rect x="576" y="647" width="184" height="26" fill="none" stroke="#E3120B" stroke-width="1.5"/>
+<rect x="312" y="768" width="656" height="80" fill="#fff" stroke="#6E7A8A"/>
+<text x="322" y="788" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >How a precondition is released</text>
+<text x="322" y="805" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="start" >Sixth arrival: a1→c1 goes out and a moves to 2. That meets the last open precondition</text>
+<text x="322" y="822" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="start" >of a2→b2, and wake finds it stored at a2. It goes out, b moves to 3, and c2→b3</text>
+<text x="322" y="839" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="start" >is released the same way.</text>
+<line x1="32" y1="881" x2="968" y2="881" stroke="#D8D8D8"/>
+<text x="32" y="902" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#6E7A8A" text-anchor="start" >go/main.go, go/backlog.go, go/sequenceCounter.go. Filled dot: precondition met. Hollow dot: still waiting.</text>
+</svg>

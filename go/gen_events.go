@@ -9,13 +9,13 @@ func get_events(account_count int, event_count int) []Event {
 	events := make([]Event, 0, account_count*event_count)
 	event_counter := make(map[string]int)
 	for i := 0; i < account_count*event_count; i++ {
-		keyA := string(97 + rand.Intn(account_count-1))
-		keyB := string(97 + rand.Intn(account_count-1))
+		keyA := string(rune(97 + rand.Intn(account_count-1)))
+		keyB := string(rune(97 + rand.Intn(account_count-1)))
 		for {
 			if keyA != keyB {
 				break
 			}
-			keyB = string(97 + rand.Intn(account_count-1))
+			keyB = string(rune(97 + rand.Intn(account_count-1)))
 		}
 		_, exists := event_counter[keyA]
 		if !exists {

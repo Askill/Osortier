@@ -35,63 +35,75 @@ func saveSorted(events *[]Event, path string) {
 	}
 }
 
-func eventHasSourcePreCondition(event Event, sequenceCounter *sequenceCounter) bool {
-	return event.Source_sequence_number == sequenceCounter.getSequenceCounter(event.Source_key) || event.Source_sequence_number == 0
+// eventIsReady is strict: a slot must equal its chain counter exactly. The old
+// "seq == 0" exception was redundant for consistent data (a counter starts at
+// 0, so position 0 passes the equality) and dangerous for inconsistent data:
+// a duplicate genesis event passed it twice, double-advanced the counter, and
+// stalled the whole real chain behind it.
+func eventIsReady(event Event, sc *sequenceCounter) bool {
+	return event.Source_sequence_number == sc.getSequenceCounter(event.Source_key) &&
+		event.Destination_sequence_number == sc.getSequenceCounter(event.Destination_key)
 }
 
-func eventHasDestPreCondition(event Event, sequenceCounter *sequenceCounter) bool {
-	return event.Destination_sequence_number == sequenceCounter.getSequenceCounter(event.Destination_key) || event.Destination_sequence_number == 0
-}
-
-func sendEvent(event Event, backlog *backlog, sequenceCounter *sequenceCounter, output *[]Event) {
-
-	sc := sequenceCounter.incSequenceCounter(event.Source_key)
-	dc := sequenceCounter.incSequenceCounter(event.Destination_key)
-	if sc == 0 || dc == 0 {
-		return
-	}
+// emitEvent advances both counters, records the event, and frees its slots.
+// Both counters are sure to be materialized (the ready check read them), so
+// neither increment can fail; the old sc==0 guard was unreachable.
+func emitEvent(event Event, bl *backlog, sc *sequenceCounter, output *[]Event) {
+	sc.incSequenceCounter(event.Source_key)
+	sc.incSequenceCounter(event.Destination_key)
 	*output = append(*output, event)
-	backlog.remove(event)
+	bl.remove(event)
 }
 
-func parkOrSend(event Event, sequenceCounter *sequenceCounter, backlog *backlog, limit int, output *[]Event) {
-	if limit == 0 {
-		fmt.Println("recursion limit reached")
-		return
-
-	}
-	sourceFullfilled := eventHasSourcePreCondition(event, sequenceCounter)
-	destFullfilled := eventHasDestPreCondition(event, sequenceCounter)
-
-	if sourceFullfilled && destFullfilled {
-		sendEvent(event, backlog, sequenceCounter, output)
-		limit2 := 2
-		for {
-			event1, err1 := backlog.get(event.Source_key, event.Source_sequence_number+1)
-			if err1 != -1 {
-				parkOrSend(event1, sequenceCounter, backlog, limit-1, output)
-			}
-			event2, err2 := backlog.get(event.Destination_key, event.Destination_sequence_number+1)
-			if err2 != -1 {
-				parkOrSend(event2, sequenceCounter, backlog, limit-1, output)
-			}
-			limit2--
-			if limit2 == 0 || err1+err2 == -2 {
-				break
-			}
+// runQueue works wake-up requests to exhaustion. A request carries the event
+// just emitted; each chain's successor is looked up and emitted only if ready.
+// A not-ready follower stays parked exactly as it is: no re-store. So a
+// follower woken twice (once per predecessor) can never be re-parked as a
+// zombie after its own emission, and a follower whose sibling subtree runs
+// between the two wake-ups is caught by the second request. This replaces the
+// old inline recursion with the limit2 refetch: no depth cap, nothing dropped.
+func runQueue(pending *[]Event, sc *sequenceCounter, bl *backlog, output *[]Event) {
+	for len(*pending) > 0 {
+		emitted := (*pending)[0]
+		*pending = (*pending)[1:]
+		if f, err := bl.get(emitted.Source_key, emitted.Source_sequence_number+1); err != -1 && eventIsReady(f, sc) {
+			emitEvent(f, bl, sc, output)
+			*pending = append(*pending, f)
 		}
-	} else {
-		backlog.store(event)
+		if f, err := bl.get(emitted.Destination_key, emitted.Destination_sequence_number+1); err != -1 && eventIsReady(f, sc) {
+			emitEvent(f, bl, sc, output)
+			*pending = append(*pending, f)
+		}
 	}
-
 }
 
-func sortEvents(Events *[]Event, sequenceCounter *sequenceCounter, backlog *backlog, output *[]Event) {
+// sortEvents walks the input once. A ready input event emits immediately and
+// its cascade runs to exhaustion; a not-ready one parks. The queue holds
+// requests, never raw events, so no event can re-park after emission.
+func sortEvents(Events *[]Event, sc *sequenceCounter, bl *backlog, output *[]Event) {
+	pending := make([]Event, 0, 16)
+
 	for i, event := range *Events {
 		if i%10000 == 0 {
 			fmt.Println(i)
 		}
-		parkOrSend(event, sequenceCounter, backlog, 2000000, output)
+		if eventIsReady(event, sc) {
+			emitEvent(event, bl, sc, output)
+			pending = append(pending[:0], event)
+			runQueue(&pending, sc, bl, output)
+		} else {
+			bl.store(event)
+		}
+	}
+
+	// Second pass over parked events, kept from the lambda build. On
+	// consistent data it is a no-op (differential test in sorter_test.go); it
+	// is kept as a cheap safety net and as parity with the deployed build.
+	for _, event := range bl.Stored {
+		if eventIsReady(event, sc) {
+			pending = append(pending[:0], event)
+			runQueue(&pending, sc, bl, output)
+		}
 	}
 }
 
@@ -110,8 +122,9 @@ func main() {
 
 	start := time.Now()
 	sortEvents(&eventList, sequenceCounter, backlog, &output)
-	duration := time.Since(start)
-	fmt.Println(duration)
+	fmt.Println(time.Since(start))
+
+	fmt.Printf("emitted %d, parked %d, slot conflicts %d\n", len(output), len(backlog.Stored), backlog.conflicts)
 
 	saveSorted(&output, "./sorted.json")
 }
