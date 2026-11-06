@@ -1,4 +1,4 @@
-module jphm.de/event_sorter_lambda_get
+module matz.works/event_sorter_lambda_get
 
 go 1.18
 

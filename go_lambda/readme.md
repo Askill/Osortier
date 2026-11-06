@@ -1,5 +1,5 @@
 
 
-go build -o bootstrap jphm.de/event_sorter
+go build -o bootstrap matz.works/event_sorter
 
 zip lambda-handler.zip bootstrap   
