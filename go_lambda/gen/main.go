@@ -98,7 +98,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	i, _ := strconv.Atoi(request.QueryStringParameters["num"])
 	eventss := gen(10, min(i, 10000000)/10)
 	barray, _ := json.Marshal(eventss)
-	upload("osortiereventstore", request.QueryStringParameters["session"]+"/unsorted_events.json", barray)
+	upload("osortiereventstore", request.QueryStringParameters["session"]+"/unsorted_session_data.json", barray)
 	resp := Resp{
 		Body: fmt.Sprintf("%s request  is successful!", request.Body),
 	}

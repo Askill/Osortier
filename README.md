@@ -132,6 +132,8 @@ Memory follows disorder, so a fully shuffled batch parks nearly all of its input
 
 Both buckets are public, CORS is open and the buckets are deleted with the stack, so the demo is for demo data only.
 
+A live demo deployment is at [https://osortier.emiliamatz.de](https://osortier.emiliamatz.de): the `osortier.emiliamatz.de.` CNAME in Route 53 targets a Regional API Gateway custom domain (`d-cvf9fyx53f.execute-api.eu-central-1.amazonaws.com`, ACM cert in eu-central-1) with base path mappings for `prod` and for no path, both to the OSortier API's `prod` stage. The domain is account-level wiring applied outside CDK, so deleting the stack leaves the domain and record behind.
+
 ## Repo layout
 
 | Path | Contents |
@@ -160,7 +162,5 @@ The demo website is in its own repository, [osortier-site](https://github.com/As
 
 ## Known issues
 
-- The demo cannot get from generate to sort. gen writes unsorted_events.json, while sort and the demo website read unsorted_session_data.json ([go_lambda/gen/main.go:101](go_lambda/gen/main.go#L101), [go_lambda/sort/main.go:156](go_lambda/sort/main.go#L156)).
-- The committed lambda-handler.zip files date from June 2024 and predate the current go_lambda/sort source, which matches go/. Rebuild them before deploying.
 - Slot keys can collide. A slot key is the account key and the slot number joined without a separator, so account x1 at slot 2 and account x at slot 12 both become "x12", and the second transaction is wrongly rejected as a conflict (reproduced 2026-11-06). The demo's one-letter keys never hit this, but account IDs ending in a digit would. A separator that cannot occur in a key, or a struct key, fixes it.
 - Only go/ has tests. The CDK test is the default from the CDK project template.
