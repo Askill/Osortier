@@ -330,27 +330,13 @@ export const Caption: React.FC<{ f: number; caps: { t0: number; t1: number; text
 export type Cap = { t0: number; t1: number; text: string };
 /** frames a caption takes to finish appearing (Caption fades in over 14) */
 export const CAP_IN = 14;
-/** the extra pause after each caption has fully appeared: 1.5 s */
+/** extra rest at the end of the title and closing cards, once their motion is done: 1.5 s */
 export const PAUSE = 45;
 /**
- * Holds the picture for PAUSE frames right after each caption has finished appearing.
- * `speed` is the scene's playback rate over its script frames (as in the baseline).
- * Returns the scene's script frame for a real frame, and the frames the holds add.
+ * Plays a scene at its baseline rate. `speed` is the scene's playback rate over its script
+ * frames. Captions no longer freeze the picture: holding mid-motion looked broken.
+ * Returns the scene's script frame for a real frame, and the frames added (none).
  */
-export function makePause(caps: Cap[], speed = 1) {
-  const at = caps
-    .filter((c) => c.t0 > -100)
-    .map((c) => (c.t0 + CAP_IN) / speed)
-    .sort((a, b) => a - b);
-  const map = (real: number) => {
-    let used = 0;
-    for (const t of at) {
-      const b = real - used;
-      if (b <= t) return b * speed;
-      if (b <= t + PAUSE) return t * speed;
-      used += PAUSE;
-    }
-    return (real - used) * speed;
-  };
-  return { map, extra: at.length * PAUSE };
+export function makePause(_caps: Cap[], speed = 1) {
+  return { map: (real: number) => real * speed, extra: 0 };
 }

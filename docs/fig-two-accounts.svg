@@ -1,56 +1,119 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="450" viewBox="0 0 1000 450">
-<rect width="1000" height="450" fill="#FFFFFF"/>
-<text x="32" y="36" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.9">FIGURE 2</text>
-<text x="32" y="74" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="30" font-weight="700" fill="#121212" text-anchor="start" >A transaction sits on two accounts, so no sort key works</text>
-<text x="32" y="106" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18" font-weight="400" fill="#3A3A3A" text-anchor="start" >Each transaction has a slot in two independent sequences. Sorting by one side breaks the other.</text>
-<line x1="70" y1="211" x2="400" y2="211" stroke="#B5B5B5" stroke-width="2"/>
-<text x="40" y="217" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20" font-weight="700" fill="#006BA2" text-anchor="start" >a</text>
-<line x1="70" y1="301" x2="400" y2="301" stroke="#B5B5B5" stroke-width="2"/>
-<text x="40" y="307" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20" font-weight="700" fill="#E3120B" text-anchor="start" >b</text>
-<circle cx="100" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="100" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >0</text>
-<circle cx="170" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="170" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >1</text>
-<circle cx="240" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="240" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >2</text>
-<circle cx="310" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="310" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >3</text>
-<circle cx="100" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="100" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >0</text>
-<circle cx="150" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="150" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >1</text>
-<circle cx="200" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="200" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >2</text>
-<circle cx="250" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="250" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >3</text>
-<circle cx="300" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="300" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >4</text>
-<circle cx="350" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5"/>
-<text x="350" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="middle" >5</text>
-<path d="M240 211 C240 256.0 350 256.0 350 301" fill="none" stroke="#121212" stroke-width="2.5"/>
-<circle cx="240" cy="211" r="13" fill="#006BA2"/><text x="240" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle" >2</text>
-<circle cx="350" cy="301" r="13" fill="#E3120B"/><text x="350" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle" >5</text>
-<text x="216" y="254.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="16" font-weight="700" fill="#121212" text-anchor="end" ><tspan fill="#006BA2">a2</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b5</tspan></text>
-<text x="216" y="272.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#586173" text-anchor="end" >3rd transaction on a, 6th on b</text>
-<text x="32" y="171" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">ONE TRANSACTION, TWO ACCOUNTS</text>
-<text x="480" y="171" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">SORTED BY SOURCE ACCOUNT AND SLOT</text>
-<rect x="480" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1"/>
-<text x="516" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a0</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b0</tspan></text>
-<rect x="562" y="219" width="72" height="34" fill="#fff" stroke="#E3120B" stroke-width="2"/>
-<text x="598" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a1</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#6E7A8A">c1</tspan></text>
-<rect x="644" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1"/>
-<text x="680" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a2</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b2</tspan></text>
-<rect x="726" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1"/>
-<text x="762" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#006BA2">a3</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#6E7A8A">c3</tspan></text>
-<rect x="808" y="219" width="72" height="34" fill="#fff" stroke="#E3120B" stroke-width="2"/>
-<text x="844" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#E3120B">b1</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#6E7A8A">c0</tspan></text>
-<rect x="890" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1"/>
-<text x="926" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700" fill="#121212" text-anchor="middle" ><tspan fill="#6E7A8A">c2</tspan><tspan fill="#6E7A8A">→</tspan><tspan fill="#E3120B">b3</tspan></text>
-<path d="M598 255 C598 301 844 301 844 255" fill="none" stroke="#E3120B" stroke-width="1.5"/>
-<rect x="638" y="311" width="250" height="63" fill="#fff" stroke="#6E7A8A"/>
-<text x="648" y="331" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#121212" text-anchor="start" >c1 before c0</text>
-<text x="648" y="348" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="start" >slot 1 on account c goes out before</text>
-<text x="648" y="365" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400" fill="#121212" text-anchor="start" >slot 0, so account c is out of order</text>
-<line x1="32" y1="411" x2="968" y2="411" stroke="#D8D8D8"/>
-<text x="32" y="432" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400" fill="#6E7A8A" text-anchor="start" >The six example transactions used throughout the README, sorted by (source_key, source_sequence_number).</text>
+    <rect width="1000" height="450" fill="#FFFFFF" />
+    <text x="32" y="36" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700"
+        fill="#6E7A8A" text-anchor="start" letter-spacing="1.9">FIGURE 2</text>
+    <text x="32" y="74" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="30" font-weight="700"
+        fill="#121212" text-anchor="start">No single sort key works</text>
+    <text x="32" y="106" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="18"
+        font-weight="400" fill="#3A3A3A" text-anchor="start">Each transaction has a slot in two independent sequences.
+        Sorting by one side breaks the other.</text>
+    <line x1="70" y1="211" x2="400" y2="211" stroke="#B5B5B5" stroke-width="2" />
+    <text x="40" y="217" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20"
+        font-weight="700" fill="#006BA2" text-anchor="start">a</text>
+    <line x1="70" y1="301" x2="400" y2="301" stroke="#B5B5B5" stroke-width="2" />
+    <text x="40" y="307" font-family="Georgia,'Iowan Old Style','Times New Roman',serif" font-size="20"
+        font-weight="700" fill="#E3120B" text-anchor="start">b</text>
+    <circle cx="100" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="100" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">0</text>
+    <circle cx="170" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="170" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">1</text>
+    <circle cx="240" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="240" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">2</text>
+    <circle cx="310" cy="211" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="310" y="216" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">3</text>
+    <circle cx="100" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="100" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">0</text>
+    <circle cx="150" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="150" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">1</text>
+    <circle cx="200" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="200" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">2</text>
+    <circle cx="250" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="250" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">3</text>
+    <circle cx="300" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="300" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">4</text>
+    <circle cx="350" cy="301" r="13" fill="#fff" stroke="#B5B5B5" stroke-width="1.5" />
+    <text x="350" y="306" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="middle">5</text>
+    <path d="M240 211 C240 256.0 350 256.0 350 301" fill="none" stroke="#121212" stroke-width="2.5" />
+    <circle cx="240" cy="211" r="13" fill="#006BA2" /><text x="240" y="216"
+        font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#fff"
+        text-anchor="middle">2</text>
+    <circle cx="350" cy="301" r="13" fill="#E3120B" /><text x="350" y="306"
+        font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700" fill="#fff"
+        text-anchor="middle">5</text>
+    <text x="216" y="254.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="16" font-weight="700"
+        fill="#121212" text-anchor="end">
+        <tspan fill="#006BA2">a2</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#E3120B">b5</tspan>
+    </text>
+    <text x="216" y="272.0" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#586173" text-anchor="end">3rd transaction on a, 6th on b</text>
+    <text x="32" y="171" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700"
+        fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">ONE TRANSACTION, TWO ACCOUNTS</text>
+    <text x="480" y="171" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="11" font-weight="700"
+        fill="#6E7A8A" text-anchor="start" letter-spacing="1.6">SORTED BY SOURCE ACCOUNT AND SLOT</text>
+    <rect x="480" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1" />
+    <text x="516" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#006BA2">a0</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#E3120B">b0</tspan>
+    </text>
+    <rect x="562" y="219" width="72" height="34" fill="#fff" stroke="#E3120B" stroke-width="2" />
+    <text x="598" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#006BA2">a1</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#6E7A8A">c1</tspan>
+    </text>
+    <rect x="644" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1" />
+    <text x="680" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#006BA2">a2</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#E3120B">b2</tspan>
+    </text>
+    <rect x="726" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1" />
+    <text x="762" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#006BA2">a3</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#6E7A8A">c3</tspan>
+    </text>
+    <rect x="808" y="219" width="72" height="34" fill="#fff" stroke="#E3120B" stroke-width="2" />
+    <text x="844" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#E3120B">b1</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#6E7A8A">c0</tspan>
+    </text>
+    <rect x="890" y="219" width="72" height="34" fill="#fff" stroke="#B5B5B5" stroke-width="1" />
+    <text x="926" y="241" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="14" font-weight="700"
+        fill="#121212" text-anchor="middle">
+        <tspan fill="#6E7A8A">c2</tspan>
+        <tspan fill="#6E7A8A">→</tspan>
+        <tspan fill="#E3120B">b3</tspan>
+    </text>
+    <path d="M598 255 C598 301 844 301 844 255" fill="none" stroke="#E3120B" stroke-width="1.5" />
+    <rect x="638" y="311" width="250" height="63" fill="#fff" stroke="#6E7A8A" />
+    <text x="648" y="331" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="700"
+        fill="#121212" text-anchor="start">c1 before c0</text>
+    <text x="648" y="348" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#121212" text-anchor="start">slot 1 on account c goes out before</text>
+    <text x="648" y="365" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12.5" font-weight="400"
+        fill="#121212" text-anchor="start">slot 0, so account c is out of order</text>
+    <line x1="32" y1="411" x2="968" y2="411" stroke="#D8D8D8" />
+    <text x="32" y="432" font-family="Helvetica,Arial,'Segoe UI',sans-serif" font-size="12" font-weight="400"
+        fill="#6E7A8A" text-anchor="start">The six example transactions used throughout the README, sorted by
+        (source_key, source_sequence_number).</text>
 </svg>

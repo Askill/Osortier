@@ -8,9 +8,15 @@ Osortier is for downstream consumers in transaction-based, event-driven systems 
 
 Osortier puts the transactions back in an order that is valid for every account. It is stateless and single-threaded, runs in O(n), and needs no database. The ordering comes from the sequence numbers the producer already gives each account's transactions, so everything between producer and consumer can stay unordered and at-least-once.
 
-The repo has the algorithm in Go with tests and a demo deployment on AWS (Lambda, S3 and API Gateway, defined in CDK). A two-minute explainer video, [docs/osortier-explainer.mp4](docs/osortier-explainer.mp4), walks through the same ideas as this README. It has no audio, and everything it shows is also described in the text here.
+The repo has the algorithm in Go with tests and a demo deployment on AWS (Lambda, S3 and API Gateway, defined in CDK). A 90-second explainer video, [docs/osortier-explainer.mp4](docs/osortier-explainer.mp4), walks through the same ideas as this README. It has no audio, and everything it shows is also described in the text here.
 
 ![Producers own their accounts and number each account's transactions without gaps. Kafka partitions, retries, parallel workers and S3 batches reorder them. Osortier, stateless and single-threaded, puts them back in order for the consumer, which applies them to account state.](docs/fig-pipeline.svg)
+## Why I built this
+
+The motivation comes from a consulting engagement at a large e-commerce retailer running real-time stockkeeping on a double-entry model. Out-of-order streams were ordered in SQL there, with a sort plus a grouping on a database instance, reported at about 5k per month and under 1M transactions per day. 
+
+At the client a solution created together was more important than an optimal solution.  
+The quality of the original solution never sat right with me, so I built this for my own satisfaction. 
 
 ## Stateless by design
 
@@ -38,6 +44,8 @@ The six transactions arrive as a2→b2, a3→c3, b1→c0, c2→b3, a0→b0, a1�
 
 ### The problem class
 
+Sorting a DAG while its nodes arrive in random order is an online topological sort. 
+
 Each account's sequence is a chain, and each transaction is a node on two chains with at most two parents, the previous slot on each of its accounts. The chains form a DAG, and any topological order of it is a valid output.
 
 ![The six example transactions in a row, linked by arcs labelled a, b and c. Each transaction has an incoming arc from the previous slot on each of its two accounts.](docs/fig-dag.svg)
@@ -48,7 +56,7 @@ Every transaction is cross-account. Double entry requires it, and the generator 
 - Following parents back, positions only decrease, so there are no cycles. Every transaction descends from a double genesis, a transaction at slot 0 on both sides. With random account pairs, the input becomes one connected web whose descendants roughly double per generation (2, 4, 8, 16, 29, 51, 80, 118 in a 96-account simulation of the generator's model, shown in the image at the top).
 - Chains braid. A transaction can be the child of the same parent on both sides, as with a0→b0 followed by a1→b1. Both wake-ups then point at one transaction, and it must still go out once.
 
-Sorting a DAG while its nodes arrive in random order is an online topological sort. Related problems:
+Related problems:
 
 | Problem | Relation |
 | --- | --- |
@@ -66,9 +74,10 @@ A parked transaction becomes ready only when its last missing parent is emitted.
 
 Each transaction is parked at most once and emitted at most once, and each emit costs two hash lookups, so time is O(n). Memory is one counter per account plus the current backlog.
 
-## Release comes in bursts
+## Release can be bursty
 
-A late transaction releases its whole parked subtree, meaning every descendant whose other parents are already out. Because the transactions form one web, that subtree can be most of the backlog. The output alternates between long quiet stretches and sudden floods, and how far transactions are out of place decides how big the floods get. Measured on 1M synthetic transactions over 29 accounts:
+One late transaction releases its whole parked subtree, meaning every descendant whose other parents are already out.   
+Because the transactions form one conencted forrest, that subtree can be most of the backlog. The output alternates between long quiet stretches and sudden floods, and how far transactions are out of place decides how big the floods get. Measured on 1M synthetic transactions over 29 accounts:
 
 | Input order | Largest single wave | Peak backlog |
 | --- | --- | --- |
@@ -78,7 +87,8 @@ A late transaction releases its whole parked subtree, meaning every descendant w
 | shuffled within blocks of 100,000 | 96,229 | 99,816 |
 | fully shuffled | 923,005, which is 92% of the input | about the whole input |
 
-With full shuffling, 19 of the 1,000,020 arrivals released anything. A second fully shuffled run had 20 releasing arrivals, and its last arrival released 878,536 transactions. With 999 accounts the largest wave was 469,105, spread over 512 releasing arrivals. Wave size and backlog follow the width of the disorder, and the size of the input does not change them.
+With full shuffling, 19 of the 1,000,020 arrivals released anything.   
+A second **fully shuffled** run had 20 releasing arrivals, and its last arrival released 878,536 transactions. With 999 accounts the largest wave was 469,105, spread over 512 releasing arrivals. Wave size and backlog follow the width of the disorder, and the size of the input does not change them.
 
 For operation, that means two things. The downstream consumer has to be sized for waves, because one very late root releases everything behind it at once. And small windows keep the backlog and the waves about as large as the disorder in them.
 
@@ -94,8 +104,6 @@ The tests cover this on constructed input. `TestLateGenesisArrivesLast` holds th
 
 The numbers come from a scratch harness around `sortEvents`, not committed, run on 2026-11-06 with go1.22.1 on one thread of an AMD Ryzen 7 3700X. The input came from the generator, and every output was checked to be gap-free on every account. The burst figures come from the same harness. Time grows linearly with input size and does not depend on the number of accounts.
 
-Two figures in this project are not measurements. The demo website's cost of about $0.28 per month for 900M transactions is arithmetic from an assumed 83k transactions/s on 2 GB of Lambda memory. The claim that 30M transactions per month with light batching fits in the AWS free tier is the project's target.
-
 ## Inconsistent input
 
 | Case | Behaviour |
@@ -109,13 +117,8 @@ After the input ends, the walker makes one more pass over the backlog. On consis
 
 ## Trade-offs
 
-A transaction that never arrives leaves its descendants waiting indefinitely, and the source is where that gap shows. Memory follows disorder, so a fully shuffled batch parks nearly all of its input before it drains.
-
-The SQL approach this replaces has real strengths: durable, queryable, transactional state and operations every team knows. Osortier gives those up for speed, cost and a design with no state to manage.
-
-## Where it comes from
-
-The idea comes from a consulting engagement at a large e-commerce retailer running real-time stockkeeping on a double-entry model. Out-of-order streams were ordered in SQL there, with a sort plus a grouping on a database instance, reported at about 5k per month and under 1M transactions per day. Osortier moves the same release logic into plain Lambda compute with S3 as the only store. The engagement figures are not reproduced here.
+A transaction that never arrives leaves its descendants waiting indefinitely, and the source is where that gap shows. 
+Memory follows disorder, so a fully shuffled batch parks nearly all of its input before it drains.
 
 ## Demo deployment
 
