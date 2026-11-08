@@ -8,7 +8,7 @@ Osortier is for downstream consumers in transaction-based, event-driven systems 
 
 Osortier puts the transactions back in an order that is valid for every account. It is stateless and single-threaded, runs in O(n), and needs no database. The ordering comes from the sequence numbers the producer already gives each account's transactions, so everything between producer and consumer can stay unordered and at-least-once.
 
-The repo has the algorithm in Go with tests and a demo deployment on AWS (Lambda, S3 and API Gateway, defined in CDK). A 90-second explainer video, [docs/osortier-explainer.mp4](docs/osortier-explainer.mp4), walks through the same ideas as this README. It has no audio, and everything it shows is also described in the text here.
+The repo has the algorithm in Go with tests and a CDK stack that runs it on AWS Lambda. Try the [demo](https://osortier.emiliamatz.de). A 90-second explainer video, [docs/osortier-explainer.mp4](docs/osortier-explainer.mp4), walks through the same ideas as this README. It has no audio, and everything it shows is also described in the text here.
 
 ![Producers own their accounts and number each account's transactions without gaps. Kafka partitions, retries, parallel workers and S3 batches reorder them. Osortier, stateless and single-threaded, puts them back in order for the consumer, which applies them to account state.](docs/fig-pipeline.svg)
 ## Why I built this
@@ -77,7 +77,7 @@ Each transaction is parked at most once and emitted at most once, and each emit 
 ## Release can be bursty
 
 One late transaction releases its whole parked subtree, meaning every descendant whose other parents are already out.   
-Because the transactions form one conencted forrest, that subtree can be most of the backlog. The output alternates between long quiet stretches and sudden floods, and how far transactions are out of place decides how big the floods get. Measured on 1M synthetic transactions over 29 accounts:
+Because the transactions form one connected forest, that subtree can be most of the backlog. The output alternates between long quiet stretches and sudden floods, and how far transactions are out of place decides how big the floods get. Measured on 1M synthetic transactions over 29 accounts:
 
 | Input order | Largest single wave | Peak backlog |
 | --- | --- | --- |
@@ -120,20 +120,6 @@ After the input ends, the walker makes one more pass over the backlog. On consis
 A transaction that never arrives leaves its descendants waiting indefinitely, and the source is where that gap shows. 
 Memory follows disorder, so a fully shuffled batch parks nearly all of its input before it drains.
 
-## Demo deployment
-
-![Browser to API Gateway, which serves the site from the osortierdemosite bucket and routes to three Lambdas: gen on POST /events, sort on POST /sort, get on GET /events. gen writes unsorted transactions to the osortiereventstore bucket, sort writes them back sorted, and get returns the file's URL.](docs/fig-deploy.svg)
-
-| Function | Memory | Request |
-| --- | --- | --- |
-| gen | 4096 MB | POST /events?session=s&num=n writes n shuffled transactions, at most 10M, to the store |
-| sort | 4096 MB | POST /sort?session=s loads them, sorts them and writes s/sorted_events.json |
-| get | 1024 MB | GET /events?session=s checks that the sorted file exists and returns its S3 URL, hardcoded to eu-central-1 |
-
-Both buckets are public, CORS is open and the buckets are deleted with the stack, so the demo is for demo data only.
-
-A live demo deployment is at [https://osortier.emiliamatz.de](https://osortier.emiliamatz.de): the `osortier.emiliamatz.de.` CNAME in Route 53 targets a Regional API Gateway custom domain (`d-cvf9fyx53f.execute-api.eu-central-1.amazonaws.com`, ACM cert in eu-central-1) with base path mappings for `prod` and for no path, both to the OSortier API's `prod` stage. The domain is account-level wiring applied outside CDK, so deleting the stack leaves the domain and record behind.
-
 ## Repo layout
 
 | Path | Contents |
@@ -153,12 +139,10 @@ cd go && go run .         # writes ../data/shuffeled_events_go.json and ./sorted
 # per Lambda folder, module name from its go.mod
 go build -o bootstrap <module> && zip lambda-handler.zip bootstrap
 
-cd cdk && npm run build && cdk deploy      # needs the demo site build next to the stack, see below
+cd cdk && npm run build && cdk deploy
 
 python docs/figures/make_figures.py        # regenerates every figure in docs/
 ```
-
-The CDK stack deploys the demo website along with its buckets. A missing site build stops the synth on purpose, because deploying without it would empty the site bucket. Pass `-c siteDist=<path to the built site>` to point the stack at a different build.
 
 ## Known issues
 
