@@ -153,12 +153,12 @@ cd go && go run .         # writes ../data/shuffeled_events_go.json and ./sorted
 # per Lambda folder, module name from its go.mod
 go build -o bootstrap <module> && zip lambda-handler.zip bootstrap
 
-cd cdk && npm run build && cdk deploy      # needs the demo site built, see below
+cd cdk && npm run build && cdk deploy      # needs the demo site build next to the stack, see below
 
 python docs/figures/make_figures.py        # regenerates every figure in docs/
 ```
 
-The demo website is in its own repository, [osortier-site](https://github.com/Askill/osortier-site). The CDK stack deploys its build and expects that repository next to this one, at `../osortier-site`, built with `npm run build` in its `osortier` folder. Pass `-c siteDist=<path to osortier/dist>` for another location. Without the build, the synth stops with an error, because deploying without it would empty the site bucket.
+The CDK stack deploys the demo website along with its buckets. A missing site build stops the synth on purpose, because deploying without it would empty the site bucket. Pass `-c siteDist=<path to the built site>` to point the stack at a different build.
 
 ## Known issues
 
