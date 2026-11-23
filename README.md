@@ -31,8 +31,6 @@ The guarantee is a causal order per account: every account gets its transactions
 
 The model is double-entry: each key is an account, and each transaction moves value between two accounts. The original case was real-time stockkeeping. A transaction carries both the change and the new state of both accounts, so each account's transactions must be applied in exact sequence. The producer owns those accounts and numbers each one's transactions from 0 without gaps.
 
-![One transaction, a2→b5, connects slot 2 on account a with slot 5 on account b. Sorting the six example transactions by source account and slot puts a1→c1 before b1→c0, so account c comes out with slot 1 before slot 0.](docs/fig-two-accounts.svg)
-
 Each transaction has two positions in two independent sequences, so no single sort key ranks them, and sorting by one side breaks the other.
 
 A gap also spreads. If a0→b0 is missing, accounts a and b both stall. Then b1→c0 cannot go out, so c stalls too, although nothing on c is missing.
