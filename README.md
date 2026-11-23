@@ -10,7 +10,6 @@ Osortier puts the transactions back in an order that is valid for every account.
 
 The repo has the algorithm in Go with tests and a CDK stack that runs it on AWS Lambda. Try the [demo](https://osortier.emiliamatz.de). A 90-second explainer video, [docs/osortier-explainer.mp4](docs/osortier-explainer.mp4), walks through the same ideas as this README. It has no audio, and everything it shows is also described in the text here.
 
-![Producers own their accounts and number each account's transactions without gaps. Kafka partitions, retries, parallel workers and S3 batches reorder them. Osortier, stateless and single-threaded, puts them back in order for the consumer, which applies them to account state.](docs/fig-pipeline.svg)
 ## Why I built this
 
 The motivation comes from a consulting engagement at a large e-commerce retailer running real-time stockkeeping on a double-entry model. Out-of-order streams were ordered in SQL there, with a sort plus a grouping on a database instance, reported at about 5k per month and under 1M transactions per day. 
